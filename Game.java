@@ -46,12 +46,13 @@ public class Game extends JPanel implements ActionListener, KeyListener
 	public void step() 
 	{
 		if(playing){}
-		//repaint();
+		repaint();
 	}
 
 	public void paintComponent(Graphics g) {
 
 		super.paintComponent(g);
+		Box[] row1 = createArray(500);
 		if (showTitleScreen) 
 		{
 			paintTitleScreen(g);
@@ -59,11 +60,17 @@ public class Game extends JPanel implements ActionListener, KeyListener
 		} 
 		else if (playing) 
 		{
-			g.setColor(Color.WHITE);
+			//g.setColor(Color.WHITE);
 			g.fillOval(ballX, ballY, diameter, diameter);
 			g.drawLine(0, ballY + diameter, getHeight()/2, ballY + diameter);
 			
+			//Box[] row1 = createArray(500);
+			for (Box b : row1)
+			  b.paint(g);
 			
+			
+			//drawBoxes(row1, g);
+			//shiftRow(row1, g);
 			
 		}
 
@@ -82,7 +89,7 @@ public class Game extends JPanel implements ActionListener, KeyListener
 				showTitleScreen = false;
 				playing = true;
 			}
-			repaint();
+			//repaint();
 
 		}
 		if (playing) 
@@ -125,53 +132,41 @@ public class Game extends JPanel implements ActionListener, KeyListener
 	
 	public void drawBoxes(Box[] arr, Graphics g)
 	{
-		int numBoxesToRemove = randInt(1, arr.length-1);
-		for(int box = 0; box < numBoxesToRemove; box++)
-		{
-			int boxToRemove = randInt(1, arr.length-1);
-			arr[boxToRemove] = null;
-		}
-		
-		for(Box b : arr)
-		{
-			if(b != null)
-			{
-				b.paintComponent(g);
-			}
-		}
-	}
-	
-	public void shiftRow(Box[] arr, Graphics g)
-	{
-		g.setColor(Color.YELLOW);
-		Box[] shift = new Box[arr.length];
-		for(int i = 0; i < arr.length; i++)
-		{
-			shift[i] = arr[i];
-		}
-	
-		
-		for(Box b : shift)
-		{
-			if(b != null)
-			{
-				int currentY = (int) b.getY();
-				b.setY(currentY + 119);
-				b.paintComponent(g);
-			}
-		}
-		
+//		int numBoxesToRemove = randInt(1, arr.length-1);
+//		for(int box = 0; box < numBoxesToRemove; box++)
+//		{
+//			int boxToRemove = randInt(1, arr.length-1);
+//			arr[boxToRemove] = null;
+//		}
+//		
 //		for(Box b : arr)
 //		{
 //			if(b != null)
 //			{
-//				g.setColor(Color.BLACK);
 //				b.paintComponent(g);
-//				
 //			}
 //		}
-		
 	}
+	
+//	public void shiftRow(Box[] arr, Graphics g)
+//	{
+//		Box[] shift = new Box[arr.length];
+//		for(int i = 0; i < arr.length; i++)
+//		{
+//			shift[i] = arr[i];
+//		}
+//	
+//		
+//		for(Box b : shift)
+//		{
+//			if(b != null)
+//			{
+//				int currentY = (int) b.getY();
+//				b.setY(currentY + 119);
+//				b.paintComponent(g);
+//			}
+//		}
+//	}
 	
 	public Box[] createArray(int yPos)
 	{
@@ -179,9 +174,11 @@ public class Game extends JPanel implements ActionListener, KeyListener
 		int increment = 19; // creates an offset between the block1 and the block that comes after it
 		for (int i = 0; i < newRow.length; i++) 
 		{
+		  //int pl = (int)(Math.random()*7);
 			newRow[i] = new Box(increment, yPos);
 			increment += 119;
 		}
+		System.out.println(newRow);
 		return newRow;
 	}
 	

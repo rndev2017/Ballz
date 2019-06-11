@@ -13,7 +13,7 @@ import java.util.Random;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import com.sun.glass.ui.Window.Level;
+
 
 
 
@@ -21,47 +21,21 @@ public class Box extends Rectangle
 {
 	private int x, y;
 	private int health;
-	public static final int length = 100;
 	public static final int width = 100;
+	public static final int height = 100;
 	
 	public Box(int xPos, int yPos)
 	{
-		this.x = xPos;
-		this.y = yPos;
+	  super(xPos,yPos,width, height);
 		this.health = 15;
 	}
-	
-	
-	public double getX() {
-		return x;
-	}
 
 
 
-	public void setX(int x) {
-		this.x = x;
-	}
-
-
-
-	public double getY() {
-		System.out.println(y);
-		return y;
-		
-	}
-
-
-
-	public void setY(int y) {
-		this.y = y;
-	}
-
-
-
-	public void paintComponent(Graphics g)
+	public void paint(Graphics g)
 	{
 		g.setColor(getColor(health));
-		g.fillRect(this.x, this.y, width, length);
+		g.fillRect((int)getX(), (int)getY(), width, height);
 	}
 	
 	public Color getColor(int health)
