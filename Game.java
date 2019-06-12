@@ -69,12 +69,7 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 		} 
 		else if (playing) 
 		{
-			//g.setColor(Color.WHITE);
-			g.fillOval(ballX, ballY, diameter, diameter);
-			g.drawLine(0, ballY + diameter, getHeight()/2, ballY + diameter);
-			
-			
-					
+			ball.paint();	
 		}
 
 		else if (gameOver) 
