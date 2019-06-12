@@ -1,7 +1,7 @@
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
-public abstract class MovingBall extends Rectangle
+public class MovingBall extends Rectangle
 {
   private int objDeltaX;
   private int objDeltaY;
@@ -31,5 +31,4 @@ public abstract class MovingBall extends Rectangle
   {
     this.objDeltaY = ballDeltaY;
   }
-  public abstract void paint(Graphics g);
 }
