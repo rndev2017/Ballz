@@ -23,6 +23,8 @@ public class Game extends JPanel implements ActionListener, KeyListener
 	private boolean showTitleScreen = true;
 	private boolean playing = false;
 	private boolean gameOver = false;
+	private int numBoxesToRemove;
+	private int[] randomPlacements;
 	private int ballX = 465;
 	private int ballY = 1500;
 	private int diameter = 50;
@@ -31,6 +33,15 @@ public class Game extends JPanel implements ActionListener, KeyListener
 	{
 		setBackground(Color.BLACK);
 		
+		numBoxesToRemove = (int)(Math.random()*8);
+		randomPlacements = new int[8];
+		for(int i = 0; i < randomPlacements.length; i++)
+		{
+		  randomPlacements[i] = (int)(Math.random()*8);
+		}
+		System.out.println(Arrays.toString(randomPlacements));
+		
+	
 		
 		setFocusable(true);
 		addKeyListener(this);
@@ -52,7 +63,6 @@ public class Game extends JPanel implements ActionListener, KeyListener
 	public void paintComponent(Graphics g) {
 
 		super.paintComponent(g);
-		Box[] row1 = createArray(500);
 		if (showTitleScreen) 
 		{
 			paintTitleScreen(g);
@@ -64,45 +74,12 @@ public class Game extends JPanel implements ActionListener, KeyListener
 			g.fillOval(ballX, ballY, diameter, diameter);
 			g.drawLine(0, ballY + diameter, getHeight()/2, ballY + diameter);
 			
-			//Box[] row1 = createArray(500);
-			for (Box b : row1)
-			  b.paint(g);
 			
-			
-			//drawBoxes(row1, g);
-			//shiftRow(row1, g);
-			
+					
 		}
 
 		else if (gameOver) 
 		{
-		}
-	}
-
-	@Override
-	public void keyPressed(KeyEvent e) 
-	{
-		// TODO Auto-generated method stub
-		if (showTitleScreen) 
-		{
-			if (e.getKeyCode() == KeyEvent.VK_P) {
-				showTitleScreen = false;
-				playing = true;
-			}
-			//repaint();
-
-		}
-		if (playing) 
-		{
-		}
-
-		if (gameOver) 
-		{
-			if (e.getKeyCode() == KeyEvent.VK_SPACE) 
-			{
-				gameOver = false;
-				showTitleScreen = true;
-			}
 		}
 	}
 
@@ -130,59 +107,31 @@ public class Game extends JPanel implements ActionListener, KeyListener
 		g.drawString("Press 'P' to play.", getWidth() / 3, (int) (getHeight() / 1.5));
 	}
 	
-	public void drawBoxes(Box[] arr, Graphics g)
-	{
-//		int numBoxesToRemove = randInt(1, arr.length-1);
-//		for(int box = 0; box < numBoxesToRemove; box++)
-//		{
-//			int boxToRemove = randInt(1, arr.length-1);
-//			arr[boxToRemove] = null;
-//		}
-//		
-//		for(Box b : arr)
-//		{
-//			if(b != null)
-//			{
-//				b.paintComponent(g);
-//			}
-//		}
-	}
-	
-//	public void shiftRow(Box[] arr, Graphics g)
-//	{
-//		Box[] shift = new Box[arr.length];
-//		for(int i = 0; i < arr.length; i++)
-//		{
-//			shift[i] = arr[i];
-//		}
-//	
-//		
-//		for(Box b : shift)
-//		{
-//			if(b != null)
-//			{
-//				int currentY = (int) b.getY();
-//				b.setY(currentY + 119);
-//				b.paintComponent(g);
-//			}
-//		}
-//	}
-	
-	public Box[] createArray(int yPos)
-	{
-		Box[] newRow = new Box[8];
-		int increment = 19; // creates an offset between the block1 and the block that comes after it
-		for (int i = 0; i < newRow.length; i++) 
-		{
-		  //int pl = (int)(Math.random()*7);
-			newRow[i] = new Box(increment, yPos);
-			increment += 119;
-		}
-		System.out.println(newRow);
-		return newRow;
-	}
-	
-	
+	@Override
+  public void keyPressed(KeyEvent e) 
+  {
+    // TODO Auto-generated method stub
+    if (showTitleScreen) 
+    {
+      if (e.getKeyCode() == KeyEvent.VK_P) 
+      {
+        showTitleScreen = false;
+        playing = true;
+      }
+    }
+    if (playing) 
+    {
+    }
+
+    if (gameOver) 
+    {
+      if (e.getKeyCode() == KeyEvent.VK_SPACE) 
+      {
+        gameOver = false;
+        showTitleScreen = true;
+      }
+    }
+  }
 	@Override
 	public void keyReleased(KeyEvent e) 
 	{
