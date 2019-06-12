@@ -29,7 +29,7 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 
 	public Game() {
 		setBackground(Color.BLACK);
-		Ball ball = new Ball(getWidth() / 2, getHeight(), diameter, diameter);
+		ball = new Ball(getWidth() / 2, getHeight(), diameter, diameter);
 		numBoxesToRemove = (int) (Math.random() * 8);
 		randomPlacements = new int[8];
 		for (int i = 0; i < randomPlacements.length; i++) {
