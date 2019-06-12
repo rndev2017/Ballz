@@ -18,21 +18,20 @@ import java.util.Arrays;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-public class Game extends JPanel implements ActionListener, KeyListener 
+public class Game extends JPanel implements ActionListener, KeyListener, MouseListener
 {
 	private boolean showTitleScreen = true;
 	private boolean playing = false;
 	private boolean gameOver = false;
 	private int numBoxesToRemove;
 	private int[] randomPlacements;
-	private int ballX = 465;
-	private int ballY = 1500;
+	private Ball ball;
 	private int diameter = 50;
 
 	public Game() 
 	{
 		setBackground(Color.BLACK);
-		
+		Ball ball = new Ball(getWidth()/2, getHeight());
 		numBoxesToRemove = (int)(Math.random()*8);
 		randomPlacements = new int[8];
 		for(int i = 0; i < randomPlacements.length; i++)
@@ -70,12 +69,7 @@ public class Game extends JPanel implements ActionListener, KeyListener
 		} 
 		else if (playing) 
 		{
-			//g.setColor(Color.WHITE);
-			g.fillOval(ballX, ballY, diameter, diameter);
-			g.drawLine(0, ballY + diameter, getHeight()/2, ballY + diameter);
-			
-			
-					
+			ball.paint();	
 		}
 
 		else if (gameOver) 
@@ -145,6 +139,48 @@ public class Game extends JPanel implements ActionListener, KeyListener
 		// TODO Auto-generated method stub
 
 	}
+public void mouseClicked(MouseEvent arg0)
+  {
+    if(playing)
+    {
+      int finalX = arg0.getX();
+      int finalY = arg0.getY();
+      ball.setBallDeltaY(finalY-ball.getBallDeltaY());
+      if (finalX > ball.getLocation().getX())
+      {
+        ball.setBallDeltaX(finalX-ball.getBallDeltaX());
+      }
+      else
+      {
+        ball.setBallDeltaX(ball.getBallDeltaX()-finalX);
+      }
+    }
+  }
 
+  @Override
+  public void mouseEntered(MouseEvent arg0)
+  {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void mouseExited(MouseEvent arg0)
+  {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void mousePressed(MouseEvent arg0)
+  {
+
+  }
+
+  @Override
+  public void mouseReleased(MouseEvent arg1)
+  {
+
+  }
 
 }
