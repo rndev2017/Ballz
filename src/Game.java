@@ -36,7 +36,7 @@ public class Game extends JPanel
   private int diameter = 50;
   public Game() {
     setBackground(Color.BLACK);
-    ball = new MovingBall(getWidth() / 2, getHeight());
+    ball = new MovingBall(250,400);
    
     inc = 119;
     randomPattern1 = generateRandomPlacement();
@@ -122,21 +122,23 @@ public class Game extends JPanel
   }
 
   @Override
-  public void mouseClicked(MouseEvent arg0)
+   public void mouseClicked(MouseEvent arg0)
   {
-    if (playing)
+    System.out.println("clicked");
+    int finalX = arg0.getX();
+    int finalY = arg0.getY();
+    ball.setBallDeltaY(finalY-(int)ball.getY());
+    if (finalX > ball.getLocation().getX())
     {
-      int finalX = arg0.getX();
-      int finalY = arg0.getY();
-      ball.setBallDeltaY(finalY - ball.getBallDeltaY());
-      if (finalX > ball.getLocation().getX())
-      {
-        ball.setBallDeltaX((int) (finalX - ball.getLocation().getX()));
-      }
-      else
-      {
-        ball.setBallDeltaX((int) (ball.getLocation().getX() - finalX));
-      }
+      ball.setBallDeltaX((int) (finalX - ball.getLocation().getX()));
+      System.out.println(ball.getBallDeltaX());
+      ball.move();
+    }
+    else
+    {
+      ball.setBallDeltaX((int) (ball.getLocation().getX() - finalX)*-1);
+      System.out.println(ball.getBallDeltaX());
+      ball.move();
     }
   }
 
