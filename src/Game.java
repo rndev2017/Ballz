@@ -1,81 +1,200 @@
-
 /**  
 * Game.java - contains the logic and graphics behind our remastered version of Ballz.  
 * @author  Rohan Nagavardhan & Mourya Chimpiri
 * @version 1.0
 */
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Random;
 import java.util.Arrays;
+import java.util.Random;
+
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-public class Game extends JPanel implements ActionListener, KeyListener, MouseListener {
-	private boolean showTitleScreen = true;
-	private boolean playing = false;
-	private boolean gameOver = false;
-	private int numBoxesToRemove;
-	private int[] randomPlacements;
-	private Ball ball;
-	private int diameter = 50;
+public class Game extends JPanel
+    implements ActionListener, KeyListener, MouseListener
+{
+  private MovingBall ball;
+  private Rectangle topBorder, leftBorder, rightBorder;
+  private boolean showTitleScreen = true;
+  private boolean playing = false;
+  private boolean gameOver = false;
+  private static int level = 1;
+  private int[] randomPattern1, randomPattern2, randomPattern3, randomPattern4, randomPattern5;
+  private ArrayList<Box[]> box2d;
+  private int inc;
+  private Ball ball;
+  private int diameter = 50;
+  public Game() {
+    setBackground(Color.BLACK);
+    ball = new MovingBall(getWidth() / 2, getHeight());
+   
+    inc = 119;
+    randomPattern1 = generateRandomPlacement();
+    randomPattern2 = generateRandomPlacement();
+    randomPattern3 = generateRandomPlacement();
+    randomPattern4 = generateRandomPlacement();
+    randomPattern5 = generateRandomPlacement();
+    
+    box2d = new ArrayList<Box[]>(); // ArrayList of Box rows
+    box2d.add(createArray(getPattern(), 500));
 
-	public Game() {
-		setBackground(Color.BLACK);
-		ball = new Ball(getWidth() / 2, getHeight(), diameter, diameter);
-		numBoxesToRemove = (int) (Math.random() * 8);
-		randomPlacements = new int[8];
-		for (int i = 0; i < randomPlacements.length; i++) {
-			randomPlacements[i] = (int) (Math.random() * 8);
-		}
-		System.out.println(Arrays.toString(randomPlacements));
+    setFocusable(true);
+    addKeyListener(this);
+    Timer t = new Timer(1000 / 60, this);
+    t.start();
+  }
+  
+  public void actionPerformed(ActionEvent e)
+  {
+    topBorder = new Rectangle(0, 0, (int) super.getSize().getWidth(),
+        (int) super.getSize().getHeight());
+    leftBorder = new Rectangle(0, 0, (int) super.getSize().getWidth(),
+        (int) super.getSize().getHeight());
+    rightBorder = new Rectangle(
+        (int) super.getSize().getWidth()
+            - (int) super.getSize().getWidth(),
+        0, (int) super.getSize().getWidth(),
+        (int) super.getSize().getHeight());
+//    ball.move();
+  }
+  
+  public void paintComponent(Graphics g)
+  {
 
-		setFocusable(true);
-		addKeyListener(this);
-		Timer t = new Timer(1000 / 60, this);
-		t.start();
-	}
-
-	public void actionPerformed(ActionEvent e) {
-		step();
-	}
-
-	public void step() {
-		if (playing) 
+    super.paintComponent(g);
+    if (showTitleScreen)
+    {
+        paintTitleScreen(g);
+    }
+    else if (playing)
+    {
+        ball.paintComponent(g);
+		
+		for (Box[] b : box2d) 
 		{
+			drawRow(b, g);
 		}
-		repaint();
-	}
+    }
+    else if (gameOver)
+    {
+    
+    }
+  }
+  
+  
+  @Override
+  public void keyPressed(KeyEvent e)
+  {
+    // TODO Auto-generated method stub
+    if (showTitleScreen)
+    {
+      if (e.getKeyCode() == KeyEvent.VK_P)
+      {
+        showTitleScreen = false;
+        playing = true;
+        System.out.println("pressed");
+        repaint();
+      }
+    }
 
-	public void paintComponent(Graphics g) {
+    if (playing)
+    {
+    }
 
-		super.paintComponent(g);
-		if (showTitleScreen) {
-			paintTitleScreen(g);
+    if (gameOver)
+    {
+      if (e.getKeyCode() == KeyEvent.VK_SPACE)
+      {
+	  	gameOver = false;
+        showTitleScreen = true;
+      }
+    }
+  }
 
-		} else if (playing) {
-			ball.paint(g);
-		}
+  @Override
+  public void mouseClicked(MouseEvent arg0)
+  {
+    if (playing)
+    {
+      int finalX = arg0.getX();
+      int finalY = arg0.getY();
+      ball.setBallDeltaY(finalY - ball.getBallDeltaY());
+      if (finalX > ball.getLocation().getX())
+      {
+        ball.setBallDeltaX((int) (finalX - ball.getLocation().getX()));
+      }
+      else
+      {
+        ball.setBallDeltaX((int) (ball.getLocation().getX() - finalX));
+      }
+    }
+  }
 
-		else if (gameOver) {
-		}
-	}
+  @Override
+  public void mouseEntered(MouseEvent arg0)
+  {
+    // TODO Auto-generated method stub
 
-	public int randInt(int min, int max) {
-		Random rand = new Random();
-		int randomNum = rand.nextInt((max - min) + 1) + min;
+  }
 
-		return randomNum;
-	}
+  @Override
+  public void mouseExited(MouseEvent arg0)
+  {
+    // TODO Auto-generated method stub
 
-	public void paintTitleScreen(Graphics g) {
+  }
+
+  @Override
+  public void mousePressed(MouseEvent arg0)
+  {
+
+  }
+
+  @Override
+  public void mouseReleased(MouseEvent arg1)
+  {
+
+  }
+
+  @Override
+  public void keyReleased(KeyEvent e)
+  {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void keyTyped(KeyEvent e)
+  {
+  }
+
+  public void mouseDragged(MouseEvent e)
+  {
+  }
+  
+  public void collide()
+  {
+    if(ball.intersects(leftBorder)||ball.intersects(rightBorder))// if the ball hits the sides, make the x velocity negated
+    {
+      ball.setBallDeltaX(ball.getBallDeltaX()*-1);
+    }
+    if(ball.intersects(topBorder))// if ball hits top, negate y velocity
+    {
+      ball.setBallDeltaY(ball.getBallDeltaY()*-1);
+    }
+  }
+  
+  public void paintTitleScreen(Graphics g) {
 		// Sets the font of the title and sets it relative to the size of the JPanel for
 		// automatic resizing
 		g.setColor(new Color(255, 102, 0)); // Dark Orange
@@ -88,88 +207,54 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 50));
 		g.drawString("Press 'P' to play.", getWidth() / 3, (int) (getHeight() / 1.5));
 	}
-	
-	public Box [] createArray(int yPos)
-	{
+
+	public Box[] createArray(int[] pattern, int yPos) {
 		Box[] arr = new Box[8];
-		int inc = 119;
-		for(int i = 0; i < randomPlacements.length;)
-		{
-			arr[randomPlacements[i]] = new Box(randomPlacements[i]*inc, yPos);
-			if(arr[randomPlacements[i]] != null)
-			{
+		for (int i = 0; i < arr.length;) {
+			arr[pattern[i]] = new Box((pattern[i] * inc) + 19, yPos);
+			if (arr[pattern[i]] != null) {
 				i++;
 			}
 		}
 		return arr;
 	}
 
-	@Override
-	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
-		if (showTitleScreen) {
-			if (e.getKeyCode() == KeyEvent.VK_P) {
-				showTitleScreen = false;
-				playing = true;
-			}
+	public int[] generateRandomPlacement() {
+		int[] randomPlacements = new int[8];
+		for (int i = 0; i < randomPlacements.length; i++) {
+			randomPlacements[i] = (int) (Math.random() * 8);
 		}
-		if (playing) {
-		}
+		return randomPlacements;
+	}
 
-		if (gameOver) {
-			if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-				gameOver = false;
-				showTitleScreen = true;
+	public void drawRow(Box[] arr, Graphics g) {
+		for (Box b : arr) {
+			if (b != null) {
+				b.paint(g);
 			}
 		}
 	}
 
-	@Override
-	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void mouseClicked(MouseEvent arg0) {
-		if (playing) {
-			int finalX = arg0.getX();
-			int finalY = arg0.getY();
-			ball.setObjDeltaY(finalY - ball.getObjDeltaY());
-			if (finalX > ball.getLocation().getX()) {
-				ball.setBallDeltaX(finalX - ball.getLocation().getX());
-			} 
-			else {
-				ball.setBallDeltaX(ball.getLocation().getX() - finalX);
-			}
+	public int[] getPattern() {
+		int rndm = (int) (Math.random() * 5);
+		if (rndm == 5) {
+			return randomPattern5;
+		} else if (rndm == 4) {
+			return randomPattern4;
+		} else if (rndm == 3) {
+			return randomPattern3;
+		} else if (rndm == 2) {
+			return randomPattern2;
 		}
-	}
 
-	@Override
-	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+		return randomPattern1;
 
 	}
-
-	@Override
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
+	
+	public static int getLevel() {
+		return level;
 	}
 
-	@Override
-	public void mousePressed(MouseEvent arg0) {
+  
 
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent arg1) {
-
-	}
-
-}
+  
