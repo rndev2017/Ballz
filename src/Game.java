@@ -1,3 +1,8 @@
+/**  
+* Game.java - contains the logic and graphics behind our remastered version of Ballz.  
+* @author  Rohan Nagavardhan & Mourya Chimpiri
+* @version 1.0
+*/
 
 import java.awt.Color;
 import java.awt.Font;
@@ -23,25 +28,70 @@ public class Game extends JPanel
   private boolean showTitleScreen = true;
   private boolean playing = false;
   private boolean gameOver = false;
-  private int numBoxesToRemove;
-  private int[] randomPlacements;
-  private int diameter = 5;
-  Timer t;
+  private static int level = 1;
+  private int[] randomPattern1, randomPattern2, randomPattern3, randomPattern4, randomPattern5;
+  private ArrayList<Box[]> box2d;
+  private int inc;
+  private Ball ball;
+  private int diameter = 50;
   public Game() {
     setBackground(Color.BLACK);
     ball = new MovingBall(getWidth() / 2, getHeight());
-    numBoxesToRemove = (int) (Math.random() * 8);
-    randomPlacements = new int[8];
-    for (int i = 0; i < randomPlacements.length; i++) {
-      randomPlacements[i] = (int) (Math.random() * 8);
-    }
-    System.out.println(Arrays.toString(randomPlacements));
+   
+    inc = 119;
+    randomPattern1 = generateRandomPlacement();
+    randomPattern2 = generateRandomPlacement();
+    randomPattern3 = generateRandomPlacement();
+    randomPattern4 = generateRandomPlacement();
+    randomPattern5 = generateRandomPlacement();
+    
+    box2d = new ArrayList<Box[]>(); // ArrayList of Box rows
+    box2d.add(createArray(getPattern(), 500));
 
     setFocusable(true);
     addKeyListener(this);
     Timer t = new Timer(1000 / 60, this);
     t.start();
   }
+  
+  public void actionPerformed(ActionEvent e)
+  {
+    topBorder = new Rectangle(0, 0, (int) super.getSize().getWidth(),
+        (int) super.getSize().getHeight());
+    leftBorder = new Rectangle(0, 0, (int) super.getSize().getWidth(),
+        (int) super.getSize().getHeight());
+    rightBorder = new Rectangle(
+        (int) super.getSize().getWidth()
+            - (int) super.getSize().getWidth(),
+        0, (int) super.getSize().getWidth(),
+        (int) super.getSize().getHeight());
+//    ball.move();
+  }
+  
+  public void paintComponent(Graphics g)
+  {
+
+    super.paintComponent(g);
+    if (showTitleScreen)
+    {
+        paintTitleScreen(g);
+    }
+    else if (playing)
+    {
+        ball.paintComponent(g);
+		
+		for (Box[] b : box2d) 
+		{
+			drawRow(b, g);
+		}
+    }
+    else if (gameOver)
+    {
+    
+    }
+  }
+  
+  
   @Override
   public void keyPressed(KeyEvent e)
   {
@@ -59,40 +109,16 @@ public class Game extends JPanel
 
     if (playing)
     {
-
     }
 
     if (gameOver)
     {
       if (e.getKeyCode() == KeyEvent.VK_SPACE)
       {
-        gameOver = false;
+	  	gameOver = false;
         showTitleScreen = true;
       }
     }
-  }
-
-  public void collide()
-  {
-    if(ball.intersects(leftBorder)||ball.intersects(rightBorder))// if the ball hits the sides, make the x velocity negated
-    {
-      ball.setBallDeltaX(ball.getBallDeltaX()*-1);
-    }
-    if(ball.intersects(topBorder))// if ball hits top, negate y velocity
-    {
-      ball.setBallDeltaY(ball.getBallDeltaY()*-1);
-    }
-//    for (int i = 0; i < boxes.length; i++)
-//    {
-//      for (int j = 0; j < boxes[i].length; j++)
-//      {
-//        
-//        if (ball.intersects(boxes[i][j]))
-//        {
-//
-//        }
-//      }
-//    }
   }
 
   @Override
@@ -155,70 +181,80 @@ public class Game extends JPanel
   public void mouseDragged(MouseEvent e)
   {
   }
-
-  public void actionPerformed(ActionEvent e)
+  
+  public void collide()
   {
-    topBorder = new Rectangle(0, 0, (int) super.getSize().getWidth(),
-        (int) super.getSize().getHeight());
-    leftBorder = new Rectangle(0, 0, (int) super.getSize().getWidth(),
-        (int) super.getSize().getHeight());
-    rightBorder = new Rectangle(
-        (int) super.getSize().getWidth()
-            - (int) super.getSize().getWidth(),
-        0, (int) super.getSize().getWidth(),
-        (int) super.getSize().getHeight());
-//    ball.move();
-  }
-
-  public void paintComponent(Graphics g)
-  {
-
-    super.paintComponent(g);
-    g.setColor(Color.RED);
-
-    if (showTitleScreen)
+    if(ball.intersects(leftBorder)||ball.intersects(rightBorder))// if the ball hits the sides, make the x velocity negated
     {
-
-      g.setFont(new Font(Font.DIALOG, Font.BOLD, 36));
-      g.drawString("Ballz", 165, 100);
-      g.setColor(Color.RED);
-
-      g.setFont(new Font(Font.DIALOG, Font.BOLD, 18));
-
-      g.drawString("Press 'P' to play.", 175, 400);
+      ball.setBallDeltaX(ball.getBallDeltaX()*-1);
     }
-    else if (playing)
+    if(ball.intersects(topBorder))// if ball hits top, negate y velocity
     {
-      
-      ball.paintComponent(g);
-    } // add the boxes and the ball at the bottom }
-    else if (gameOver)
-    {
-      g.setColor(Color.RED);
-      g.setFont(new Font(Font.DIALOG, Font.BOLD, 36));
-      g.drawString("Ballz", 165, 100);
+      ball.setBallDeltaY(ball.getBallDeltaY()*-1);
     }
-  }
-  public int randInt(int min, int max) 
-  {
-    Random rand = new Random();
-    int randomNum = rand.nextInt((max - min) + 1) + min;
-
-    return randomNum;
-  }
-  public Box [] createArray(int yPos)
-  {
-    Box[] arr = new Box[8];
-    int inc = 119;
-    for(int i = 0; i < randomPlacements.length;)
-    {
-      arr[randomPlacements[i]] = new Box(randomPlacements[i]*inc, yPos);
-      if(arr[randomPlacements[i]] != null)
-      {
-        i++;
-      }
-    }
-    return arr;
   }
   
-}
+  public void paintTitleScreen(Graphics g) {
+		// Sets the font of the title and sets it relative to the size of the JPanel for
+		// automatic resizing
+		g.setColor(new Color(255, 102, 0)); // Dark Orange
+		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 150));
+		g.drawString("Ballz", getWidth() / 3, (int) (getHeight() / 4));
+
+		// Sets the font of the instructions and sets it relative to the size of the
+		// JPanel for automatic resizing
+		g.setColor(Color.WHITE);
+		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 50));
+		g.drawString("Press 'P' to play.", getWidth() / 3, (int) (getHeight() / 1.5));
+	}
+
+	public Box[] createArray(int[] pattern, int yPos) {
+		Box[] arr = new Box[8];
+		for (int i = 0; i < arr.length;) {
+			arr[pattern[i]] = new Box((pattern[i] * inc) + 19, yPos);
+			if (arr[pattern[i]] != null) {
+				i++;
+			}
+		}
+		return arr;
+	}
+
+	public int[] generateRandomPlacement() {
+		int[] randomPlacements = new int[8];
+		for (int i = 0; i < randomPlacements.length; i++) {
+			randomPlacements[i] = (int) (Math.random() * 8);
+		}
+		return randomPlacements;
+	}
+
+	public void drawRow(Box[] arr, Graphics g) {
+		for (Box b : arr) {
+			if (b != null) {
+				b.paint(g);
+			}
+		}
+	}
+
+	public int[] getPattern() {
+		int rndm = (int) (Math.random() * 5);
+		if (rndm == 5) {
+			return randomPattern5;
+		} else if (rndm == 4) {
+			return randomPattern4;
+		} else if (rndm == 3) {
+			return randomPattern3;
+		} else if (rndm == 2) {
+			return randomPattern2;
+		}
+
+		return randomPattern1;
+
+	}
+	
+	public static int getLevel() {
+		return level;
+	}
+
+  
+
+  
