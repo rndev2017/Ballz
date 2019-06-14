@@ -65,7 +65,8 @@ public class Game extends JPanel
             - (int) super.getSize().getWidth(),
         0, (int) super.getSize().getWidth(),
         (int) super.getSize().getHeight());
-//    ball.move();
+    ball.move();
+    collide();
   }
   
   public void paintComponent(Graphics g)
