@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -21,7 +22,7 @@ public class Box extends Rectangle {
 
 	public Box(int xPos, int yPos) {
 		super(xPos, yPos, width, height);
-		this.health = 15;
+		this.health = Game.getLevel();
 	}
 
 	public void paint(Graphics g) {
@@ -37,15 +38,28 @@ public class Box extends Rectangle {
 		if (health > 10 && health <= 25) {
 			return new Color(0, 255, 51);
 		}
+		
+		if(health > 25 && health <= 40)
+		{
+			return new Color(102, 0, 153);
+		}
 		return null;
 	}
 
-	public int getHealth() {
-		return health;
+	public void setY(double d) {
+		// TODO Auto-generated method stub
+		this.y = (int) d;
+
 	}
 
-	public void setHealth(int health) {
-		this.health = health;
+	public static void shiftRow(ArrayList<Box[]> boxes) {
+		for (Box[] row : boxes) {
+			for (Box b : row) {
+				if (b != null) {
+					b.translate(0, width + 19);
+				}
+			}
+		}
 	}
 
 }
