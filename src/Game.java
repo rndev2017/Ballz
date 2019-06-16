@@ -50,6 +50,7 @@ public class Game extends JPanel
 
     setFocusable(true);
     addKeyListener(this);
+    addMouseListener(this);
     Timer t = new Timer(1000 / 60, this);
     t.start();
   }
