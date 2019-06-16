@@ -53,22 +53,29 @@ public class Game extends JPanel
     Timer t = new Timer(1000 / 60, this);
     t.start();
   }
-  
   public void actionPerformed(ActionEvent e)
   {
+    // TODO Auto-generated method stub
+    step();
+  }
+
+  public void step()
+  {
     topBorder = new Rectangle(0, 0, (int) super.getSize().getWidth(),
-        (int) super.getSize().getHeight());
-    leftBorder = new Rectangle(0, 0, (int) super.getSize().getWidth(),
+        (int) super.getSize().getHeight() / topBorderScale);
+    leftBorder = new Rectangle(0, 0,
+        (int) super.getSize().getWidth() / sideBorderScale,
         (int) super.getSize().getHeight());
     rightBorder = new Rectangle(
         (int) super.getSize().getWidth()
-            - (int) super.getSize().getWidth(),
-        0, (int) super.getSize().getWidth(),
+            - (int) super.getSize().getWidth() / sideBorderScale,
+        0, (int) super.getSize().getWidth() / sideBorderScale,
         (int) super.getSize().getHeight());
-    ball.move();
-    collide();
+      ball.move();
+      collide();
+      repaint();
+
   }
-  
   public void paintComponent(Graphics g)
   {
 
@@ -187,13 +194,19 @@ public class Game extends JPanel
   
   public void collide()
   {
-    if(ball.intersects(leftBorder)||ball.intersects(rightBorder))// if the ball hits the sides, make the x velocity negated
+   if (ball.intersects(leftBorder) || ball.intersects(rightBorder))
     {
-      ball.setBallDeltaX(ball.getBallDeltaX()*-1);
+      ball.setBallDeltaX(ball.getBallDeltaX() * -1);
     }
-    if(ball.intersects(topBorder))// if ball hits top, negate y velocity
+    if (ball.intersects(topBorder))
     {
-      ball.setBallDeltaY(ball.getBallDeltaY()*-1);
+      ball.setBallDeltaY(ball.getBallDeltaY() * -1);
+    }
+    else if((int) ball.getLocation().getY() >400)
+    {
+      ball.setLocation(250,400);
+      ball.setBallDeltaX(0);
+      ball.setBallDeltaY(0);
     }
   }
   
