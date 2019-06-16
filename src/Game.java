@@ -86,9 +86,9 @@ public class Game extends JPanel
     {
         ball.paintComponent(g);
         for (Box[] b : box2d) 
-    {
-      drawRow(b, g);
-    }
+        {
+          drawRow(b, g);
+        }
     }
     else if (gameOver)
     {
@@ -284,4 +284,3 @@ public class Game extends JPanel
     return level;
   }
 }
-
