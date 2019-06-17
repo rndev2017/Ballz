@@ -188,7 +188,6 @@ public class Game extends JPanel
   public void mouseDragged(MouseEvent e)
   {
   }
-  
   public void collide()
   {
    if (ball.intersects(leftBorder) || ball.intersects(rightBorder))
@@ -199,7 +198,7 @@ public class Game extends JPanel
     {
       ball.setBallDeltaY(ball.getBallDeltaY() * -1);
     }
-    else if((int) ball.getLocation().getY() >400)
+    else if((int) ball.getLocation().getY() >=400)
     {
       ball.setLocation(250,400);
       ball.setBallDeltaX(0);
@@ -207,15 +206,20 @@ public class Game extends JPanel
     }
     else
     {
-      for(int i=0; i<box2d.size(); i++)
+      for(int i=0;i<box2d.size(); i++)
       {
-        for(Box b : box2d.get(i))
+        for(Box b: box2d.get(i))
         {
-          if(b!=null)
+          if(ball.intersects(b))
           {
-            if(ball.intersects(b))
+            int newHealth = b.getHealth()-1;
+            if(newHealth==0)
             {
-              b.getColor(b.getHealth()-1);
+              box2d.remove(b);
+            }
+            else
+            {
+              b.getColor(newHealth);
             }
           }
         }
