@@ -184,10 +184,6 @@ public class Game extends JPanel
   public void keyTyped(KeyEvent e)
   {
   }
-
-  public void mouseDragged(MouseEvent e)
-  {
-  }
   public void collide()
   {
    if (ball.intersects(leftBorder) || ball.intersects(rightBorder))
@@ -210,8 +206,26 @@ public class Game extends JPanel
       {
         for(Box b: box2d.get(i))
         {
+          if(b!= null)
+          {
+            
           if(ball.intersects(b))
           {
+            Rectangle intersection = ball.intersection(b);
+            int intersectionX = (int)intersection.getLocation().getX();
+            int intersectionY = (int) intersection.getLocation().getY();
+            if(intersectionX==b.getLocation().getX() && intersectionY>= b.getLocation().getY() && intersectionY<=b.getLocation().getY() + 100)
+            {
+              ball.setBallDeltaX(ball.getBallDeltaX() * -1);
+            }
+            else if(intersectionX==b.getLocation().getX()+100 && intersectionY>=b.getLocation().getY() && intersectionY<=b.getLocation().getY()+100)
+            {
+              ball.setBallDeltaX(ball.getBallDeltaX() * -1);
+            }
+            else
+            {
+              ball.setBallDeltaY(ball.getBallDeltaY() * -1);
+            }
             int newHealth = b.getHealth()-1;
             if(newHealth==0)
             {
@@ -225,6 +239,7 @@ public class Game extends JPanel
         }
       }
     }
+   }   
   }
   
   public void paintTitleScreen(Graphics g) {
