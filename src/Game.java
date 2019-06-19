@@ -57,7 +57,7 @@ public class Game extends JPanel
     step();
   }
 
-  public void step()
+  private void step()
   {
     topBorder = new Rectangle(0, 0, (int) super.getSize().getWidth(),
         (int) super.getSize().getHeight() / topBorderScale);
@@ -184,7 +184,7 @@ public class Game extends JPanel
   public void keyTyped(KeyEvent e)
   {
   }
-  public void collide()
+  private void collide()
   {
    if (ball.intersects(leftBorder) || ball.intersects(rightBorder))
     {
@@ -242,7 +242,7 @@ public class Game extends JPanel
    }   
   }
   
-  public void paintTitleScreen(Graphics g) {
+  private void paintTitleScreen(Graphics g) {
     // Sets the font of the title and sets it relative to the size of the JPanel for
     // automatic resizing
     g.setColor(new Color(255, 102, 0)); // Dark Orange
@@ -256,7 +256,7 @@ public class Game extends JPanel
     g.drawString("Press 'P' to play.", getWidth() / 3, (int) (getHeight() / 1.5));
   }
 
-  public Box[] createArray(int[] pattern, int yPos) {
+  private Box[] createArray(int[] pattern, int yPos) {
     Box[] arr = new Box[8];
     for (int i = 0; i < arr.length;) {
       arr[pattern[i]] = new Box((pattern[i] * inc) + 19, yPos);
@@ -267,7 +267,7 @@ public class Game extends JPanel
     return arr;
   }
 
-  public int[] generateRandomPlacement() {
+  private int[] generateRandomPlacement() {
     int[] randomPlacements = new int[8];
     for (int i = 0; i < randomPlacements.length; i++) {
       randomPlacements[i] = (int) (Math.random() * 8);
@@ -275,7 +275,7 @@ public class Game extends JPanel
     return randomPlacements;
   }
 
-  public void drawRow(Box[] arr, Graphics g) {
+  private void drawRow(Box[] arr, Graphics g) {
     for (Box b : arr) {
       if (b != null) {
         b.paint(g);
@@ -283,7 +283,7 @@ public class Game extends JPanel
     }
   }
 
-  public int[] getPattern() {
+  private int[] getPattern() {
     int rndm = (int) (Math.random() * 5);
     if (rndm == 5) {
       return randomPattern5;
@@ -298,8 +298,5 @@ public class Game extends JPanel
     return randomPattern1;
 
   }
-  
-  public static int getLevel() {
-    return level;
-  }
+
 }
