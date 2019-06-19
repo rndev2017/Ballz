@@ -17,18 +17,25 @@ public class Box extends Rectangle
     this.health = Game.getLevel() + 1;// Sets health equal to one more than the
                                       // level number
   }
-
+  /**
+   * Paints the ball
+   * @param g
+   */
   public void paint(Graphics g)
-  {// Paints the boxes
+  {
     g.setColor(getColor(health));
     g.fillRect((int) getX(), (int) getY(), width, height);
   }
-
-  public Color getColor(int health) // Sets the colors of the boxes
+  /**
+   * Gets the color of the box according to the health
+   * @param health
+   * @return new color of the box
+   */
+  public Color getColor(int health) 
   {
     if (health == 1)
     {
-      return new Color(250, 250, 250);
+      return new Color(250, 250, 250);// Makes the box white
     }
     else if (health % 5 == 0)
     {
@@ -37,21 +44,24 @@ public class Box extends Rectangle
 
     else if (health % 3 == 0)
     {
-      return new Color(0, 255, 51);
+      return new Color(0, 255, 51);// Produces a bright green color
     }
 
     else if (health % 2 == 0)
     {
-      return new Color(102, 0, 153);
+      return new Color(102, 0, 153);// Produces a dark purple color
     }
     else
     {
-      return new Color(30, 247, 192);
+      return new Color(30, 247, 192);// Produces a sea green color
     }
   }
-
+  /**
+   * Shifts the arrays down 
+   * @param boxes
+   */
   public static void shiftRow(ArrayList<Box[]> boxes)
-  {// Shifts the row of boxes down by a specified amount of units
+  {
     for (Box[] row : boxes)
     {
       for (Box b : row)
@@ -77,7 +87,8 @@ public class Box extends Rectangle
   public boolean newHealth(int startingHealth, int decrement)
   {
     int newHealth = health - decrement;
-    if (newHealth > 0)// Is the box alive?
+ // Is the box alive?
+    if (newHealth > 0)
     {
       return true;
     }
@@ -87,4 +98,3 @@ public class Box extends Rectangle
     }
   }
 }
-
