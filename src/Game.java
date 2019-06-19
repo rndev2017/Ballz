@@ -86,6 +86,7 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 				ball.move();
 				collide();
 				
+				
 			} else {
 				ball.setBallDeltaX(0);
 				ball.setBallDeltaY(0);
@@ -183,6 +184,7 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 		} else {
 			{
 				for (int i = 0; i < box2d.size(); i++) {
+					int index =0;
 					for (Box b : box2d.get(i)) {
 						if (b != null) {
 
@@ -192,23 +194,22 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 								int intersectionY = (int) intersection.getLocation().getY();
 								if (intersectionX == b.getLocation().getX() && intersectionY >= b.getLocation().getY()
 										&& intersectionY <= b.getLocation().getY() + 100) {
+									
 									ball.setBallDeltaX(ball.getBallDeltaX() * -1);
 								} else if (intersectionX == b.getLocation().getX() + 100
 										&& intersectionY >= b.getLocation().getY()
 										&& intersectionY <= b.getLocation().getY() + 100) {
 									ball.setBallDeltaX(ball.getBallDeltaX() * -1);
 								} else {
+									
 									ball.setBallDeltaY(ball.getBallDeltaY() * -1);
 								}
-								int newHealth = b.getHealth() - level;
-								if (newHealth == 0) {
-									b = null;
-								} else {
-									b.getColor(newHealth);
-								}
+								box2d.get(i)[index] = null;
 								return true;
 							}
+							
 						}
+						index = index+1;
 					}
 				}
 				return false;
@@ -248,6 +249,7 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 		}
 		return randomPlacements;
 	}
+	
 
 	public void drawRow(Box[] arr, Graphics g) {
 		for (Box b : arr) {
