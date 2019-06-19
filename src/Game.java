@@ -160,48 +160,125 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 
 	}
 	
-	    		 
-	       
-	public boolean collide() {
-		if (ball.intersects(rightBorder)) {
-			ball.setBallDeltaX(ball.getBallDeltaX() * -1);
-			return true;
-		} else if (ball.intersects(leftBorder)) {
-			ball.setBallDeltaX(ball.getBallDeltaX() * -1);
-			return true;
-		} else if (ball.intersects(topBorder)) {
-			ball.setBallDeltaY(ball.getBallDeltaY() * -1);
+public boolean collide()
+  {
+    if (ball.intersects(rightBorder))
+    {
+      ball.setBallDeltaX(ball.getBallDeltaX() * -1);
+      return true;
+    }
+    else if (ball.intersects(leftBorder))
+    {
+      ball.setBallDeltaX(ball.getBallDeltaX() * -1);
+      return true;
+    }
+    else if (ball.intersects(topBorder))
+    {
+      ball.setBallDeltaY(ball.getBallDeltaY() * -1);
 
-			return true;
-		} else if (ball.getLocation().getY() >= movingBallInitialY) {
-			ball.setLocation((int) ball.getLocation().getX(), movingBallInitialY);
-			ball.setBallDeltaX(0);
-			ball.setBallDeltaY(0);
-			Box.shiftRow(box2d);
-			box2d.add(createArray(getPattern(),(int) super.getHeight()/4));
-			return true;
-		} else {
-			{
-				for (int i = 0; i < box2d.size(); i++) {
-					int index =0;
-					for (Box b : box2d.get(i)) {
-						if (b != null) {
+      return true;
+    }
+    else if (ball.getLocation().getY() >= movingBallInitialY)
+    {
+      ball.setLocation((int) ball.getLocation().getX(), movingBallInitialY);
+      ball.setBallDeltaX(0);
+      ball.setBallDeltaY(0);
+      level++;
+      Box.shiftRow(box2d);
+      box2d.add(createArray(getPattern(), (int) super.getHeight() / 4));
+      return true;
+    }
+    else
+    {
+      {
+        for (int i = 0; i < box2d.size(); i++)
+        {
+          int index = 0;
+          for (Box b : box2d.get(i))
+          {
+            if (b != null)
+            {
 
-							if (ball.intersects(b)) {
-								Rectangle intersection = ball.intersection(b);
-								int intersectionX = (int) intersection.getLocation().getX();
-								int intersectionY = (int) intersection.getLocation().getY();
-								if (intersectionX == b.getLocation().getX() && intersectionY >= b.getLocation().getY()
-										&& intersectionY <= b.getLocation().getY() + 100) {
-									
-									ball.setBallDeltaX(ball.getBallDeltaX() * -1);
-								} else if (intersectionX == b.getLocation().getX() + 100
-										&& intersectionY >= b.getLocation().getY()
-										&& intersectionY <= b.getLocation().getY() + 100) {
-									ball.setBallDeltaX(ball.getBallDeltaX() * -1);
-									else if((intersectionX == b.getLocation().getX() + 100|| intersectionX==b.getLocation().getX())
-                    &&(intersectionY == b.getLocation().getY()
-                    || intersectionY == b.getLocation().getY() + 100))
+              if (ball.intersects(b))
+              {
+                Rectangle intersection = ball.intersection(b);
+                int intersectionX = (int) intersection.getLocation().getX();
+                int intersectionY = (int) intersection.getLocation().getY();
+                if (intersectionY == b.getLocation().getY()
+                    && intersectionX > b.getLocation().getX()
+                    && intersectionX < b.getLocation().getX() + Box.width)
+                {
+
+                  ball.setBallDeltaY(ball.getBallDeltaY() * -1);
+                  if (box2d.get(i)[index].getHealth() - getLevel() > 0)
+                  {
+                    box2d.get(i)[index].setHealth(b.getHealth() - level);
+                    box2d.get(i)[index].getColor(b.getHealth());
+                  }
+                  else
+                  {
+                    box2d.get(i)[index] = null;
+                  }
+                }
+                else if (intersectionY == b.getLocation().getY() + Box.height
+                    && (intersectionX > b.getLocation().getX()
+                        && intersectionX < b.getLocation().getX() + Box.width))
+                {
+                  ball.setBallDeltaY(ball.getBallDeltaY() * -1);
+                  if (box2d.get(i)[index].getHealth() - getLevel() > 0)
+                  {
+                    box2d.get(i)[index].setHealth(b.getHealth() - level);
+                    box2d.get(i)[index].getColor(b.getHealth());
+                  }
+                  else
+                  {
+                    box2d.get(i)[index] = null;
+                  }
+                }
+                else if ((intersectionY > b.getLocation().getY()
+                    && intersectionY < b.getLocation().getY() + Box.height)
+                    && ((intersectionX > b.getLocation().getX()
+                        && intersectionX < b.getLocation().getX()
+                            + (Box.width) / 2)))
+                {
+                  ball.setBallDeltaY(ball.getBallDeltaY() * -1);
+                  if (box2d.get(i)[index].getHealth() - getLevel() > 0)
+                  {
+                    box2d.get(i)[index].setHealth(b.getHealth() - level);
+                    box2d.get(i)[index].getColor(b.getHealth());
+                  }
+                  else
+                  {
+                    box2d.get(i)[index] = null;
+                  }
+                }
+                else if (intersectionX==b.getLocation().getX() && intersectionY<b.getLocation().getY()+Box.height && intersectionY>b.getLocation().getY())
+                {
+                  ball.setBallDeltaX(ball.getBallDeltaX() * -1);
+                  if (box2d.get(i)[index].getHealth() - getLevel() > 0)
+                  {
+                    box2d.get(i)[index].setHealth(b.getHealth() - level);
+                    box2d.get(i)[index].getColor(b.getHealth());
+                  }
+                  else
+                  {
+                    box2d.get(i)[index] = null;
+                  }
+                }
+                else if(intersectionX==b.getLocation().getX()+Box.width&& intersectionY<b.getLocation().getY()+Box.height && intersectionY>b.getLocation().getY())
+                {
+                  ball.setBallDeltaX(ball.getBallDeltaX() * -1);
+                  if (box2d.get(i)[index].getHealth() - getLevel() > 0)
+                  {
+                    box2d.get(i)[index].setHealth(b.getHealth() - level);
+                    box2d.get(i)[index].getColor(b.getHealth());
+                  }
+                  else
+                  {
+                    box2d.get(i)[index] = null;
+                  }
+                }
+                else
                 {
                   ball.setBallDeltaX(ball.getBallDeltaX() * -1);
                   ball.setBallDeltaY(ball.getBallDeltaY() * -1);
@@ -214,22 +291,19 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
                   {
                     box2d.get(i)[index] = null;
                   }
-								} else {
-									
-									ball.setBallDeltaY(ball.getBallDeltaY() * -1);
-								}
-								box2d.get(i)[index] = null;
-								return true;
-							}
-							
-						}
-						index = index+1;
-					}
-				}
-				return false;
-			}
-		}
-	}
+                }
+                return true;
+              }
+
+            }
+            index = index + 1;
+          }
+        }
+        return false;
+      }
+    }
+  }
+
 
 	public void paintTitleScreen(Graphics g) {
 		// Sets the font of the title and sets it relative to the size of the JPanel for
