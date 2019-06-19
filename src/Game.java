@@ -79,6 +79,11 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 	public void step() {
 
 		if (playing) {
+			if(isRowHittingGround())
+			{
+				playing = false;
+				gameOver = true;
+			}
 
 			if ((int) ball.getY() < movingBallInitialY) {
 
@@ -113,7 +118,12 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 					(int) super.getSize().getWidth() / sideBorderScale, (int) super.getSize().getHeight());
 
 		} else if (gameOver) {
-
+			
+			g.setColor(Color.WHITE);
+			g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 150));
+			g.drawString("Your Score: " + getLevel() , (int)super.getWidth()/4, super.getHeight()/4);
+			g.setFont(new Font(Font.SANS_SERIF, Font.ITALIC, 100));
+			g.drawString("Press the space key to restart", (int) super.getWidth()/(int)6.5, super.getHeight()/2);
 		}
 	}
 
@@ -121,6 +131,21 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 		Timer t = new Timer(1000 / 30, this);
 		t.start();
 	}
+	
+	public boolean isRowHittingGround()
+	{
+		Box[] b = box2d.get(0);
+		for (Box box : b) {
+			if (box != null) {
+				if (box.getLocation().getY() + Box.height >= movingBallInitialY) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	
 
 	@Override
 	public void keyPressed(KeyEvent e) {
