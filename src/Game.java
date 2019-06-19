@@ -2,7 +2,6 @@
 /**  
 * Game.java - contains the logic and graphics behind our remastered version of Ballz.  
 * @author  Rohan Nagavardhan & Mourya Chimpiri
-* @version 1.0
 */
 
 import java.awt.Color;
