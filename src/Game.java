@@ -347,7 +347,7 @@ public boolean collide()
 	public Box[] createArray(int[] pattern, int yPos) {
 		Box[] arr = new Box[(int)super.getWidth()/(75 + 19)];
 		for (int i = 0; i < arr.length;) {
-			arr[pattern[i]] = new Box((pattern[i]*inc), yPos);
+			arr[pattern[i]] = new Box((pattern[i]*inc), yPos,getLevel()+1);
 			if (arr[pattern[i]] != null) {
 				i++;
 			}
