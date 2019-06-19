@@ -38,7 +38,6 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 	public Game() {
 		setBackground(Color.BLACK);
 		inc = Box.height + 19;
-		
 
 		setFocusable(true);
 		addKeyListener(this);
@@ -65,7 +64,7 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 		randomPattern5 = generateRandomPlacement();
 
 		box2d = new ArrayList<Box[]>(); // ArrayList of Box rows
-		box2d.add(createArray(getPattern(), (int)super.getHeight()/4));
+		box2d.add(createArray(getPattern(), (int) super.getHeight() / 4));
 
 	}
 
@@ -79,8 +78,7 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 	public void step() {
 
 		if (playing) {
-			if(isRowHittingGround())
-			{
+			if (isRowHittingGround()) {
 				playing = false;
 				gameOver = true;
 			}
@@ -89,14 +87,14 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 
 				ball.move();
 				collide();
-				
-				
+
 			} else {
 				ball.setBallDeltaX(0);
 				ball.setBallDeltaY(0);
 
 			}
 		}
+		System.out.println(showTitleScreen + " " + playing + " " + gameOver);
 		repaint();
 
 	}
@@ -116,14 +114,18 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 			g.fillRect(0, 0, (int) super.getSize().getWidth() / sideBorderScale, (int) super.getSize().getHeight());
 			g.fillRect((int) super.getSize().getWidth() - (int) super.getSize().getWidth() / sideBorderScale, 0,
 					(int) super.getSize().getWidth() / sideBorderScale, (int) super.getSize().getHeight());
+			g.drawLine(0, movingBallInitialY+ball.getDiameter(), super.getWidth(), ball.getDiameter()+movingBallInitialY);
+			g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 100));
+			g.setColor(Color.WHITE);
+			g.drawString("Score: " + getLevel(), (int)(this.getSize().getWidth()/2.5), (int)this.getSize().getHeight()/9);
 
 		} else if (gameOver) {
-			
+
 			g.setColor(Color.WHITE);
 			g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 150));
-			g.drawString("Your Score: " + getLevel() , (int)super.getWidth()/4, super.getHeight()/4);
+			g.drawString("Your Score: " + getLevel(), (int) super.getWidth() / 4, super.getHeight() / 4);
 			g.setFont(new Font(Font.SANS_SERIF, Font.ITALIC, 100));
-			g.drawString("Press the space key to restart", (int) super.getWidth()/(int)6.5, super.getHeight()/2);
+			g.drawString("Press the space key to restart", (int) super.getWidth() / (int) 6.5, super.getHeight() / 2);
 		}
 	}
 
@@ -131,9 +133,8 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 		Timer t = new Timer(1000 / 30, this);
 		t.start();
 	}
-	
-	public boolean isRowHittingGround()
-	{
+
+	public boolean isRowHittingGround() {
 		Box[] b = box2d.get(0);
 		for (Box box : b) {
 			if (box != null) {
@@ -144,8 +145,6 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 		}
 		return false;
 	}
-	
-	
 
 	@Override
 	public void keyPressed(KeyEvent e) {
@@ -169,166 +168,123 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 	public void mouseClicked(MouseEvent arg0) {
 		if (playing) {
 			int finalX = arg0.getX();
-			int finalY = arg0.getY();			
+			int finalY = arg0.getY();
 			ball.setBallDeltaY(finalY - (int) ball.getY());
-			//ball.setBallDeltaY(50);
+			// ball.setBallDeltaY(50);
 			if (finalX - (int) ball.getX() > 50) {
-				ball.setBallDeltaX(ball.getDiameter() - 20);				
-			} 
-			else{
+				ball.setBallDeltaX(ball.getDiameter() - 20);
+			} else {
 				ball.setBallDeltaX(finalX - (int) ball.getX());
 			}
 			ball.move();
 			collide();
-			
+
 		}
 
 	}
-	
-public boolean collide()
-  {
-    if (ball.intersects(rightBorder))
-    {
-      ball.setBallDeltaX(ball.getBallDeltaX() * -1);
-      return true;
-    }
-    else if (ball.intersects(leftBorder))
-    {
-      ball.setBallDeltaX(ball.getBallDeltaX() * -1);
-      return true;
-    }
-    else if (ball.intersects(topBorder))
-    {
-      ball.setBallDeltaY(ball.getBallDeltaY() * -1);
 
-      return true;
-    }
-    else if (ball.getLocation().getY() >= movingBallInitialY)
-    {
-      ball.setLocation((int) ball.getLocation().getX(), movingBallInitialY);
-      ball.setBallDeltaX(0);
-      ball.setBallDeltaY(0);
-      level++;
-      Box.shiftRow(box2d);
-      box2d.add(createArray(getPattern(), (int) super.getHeight() / 4));
-      return true;
-    }
-    else
-    {
-      {
-        for (int i = 0; i < box2d.size(); i++)
-        {
-          int index = 0;
-          for (Box b : box2d.get(i))
-          {
-            if (b != null)
-            {
+	public boolean collide() {
+		if (ball.intersects(rightBorder)) {
+			ball.setBallDeltaX(ball.getBallDeltaX() * -1);
+			return true;
+		} else if (ball.intersects(leftBorder)) {
+			ball.setBallDeltaX(ball.getBallDeltaX() * -1);
+			return true;
+		} else if (ball.intersects(topBorder)) {
+			ball.setBallDeltaY(ball.getBallDeltaY() * -1);
 
-              if (ball.intersects(b))
-              {
-                Rectangle intersection = ball.intersection(b);
-                int intersectionX = (int) intersection.getLocation().getX();
-                int intersectionY = (int) intersection.getLocation().getY();
-                if (intersectionY == b.getLocation().getY()
-                    && intersectionX > b.getLocation().getX()
-                    && intersectionX < b.getLocation().getX() + Box.width)
-                {
+			return true;
+		} else if (ball.getLocation().getY() >= movingBallInitialY) {
+			ball.setLocation((int) ball.getLocation().getX(), movingBallInitialY);
+			ball.setBallDeltaX(0);
+			ball.setBallDeltaY(0);
+			level++;
+			Box.shiftRow(box2d);
+			box2d.add(createArray(getPattern(), (int) super.getHeight() / 4));
+			return true;
+		} else {
+			{
+				for (int i = 0; i < box2d.size(); i++) {
+					int index = 0;
+					for (Box b : box2d.get(i)) {
+						if (b != null) {
 
-                  ball.setBallDeltaY(ball.getBallDeltaY() * -1);
-                  if (box2d.get(i)[index].getHealth() - getLevel() > 0)
-                  {
-                    box2d.get(i)[index].setHealth(b.getHealth() - level);
-                    box2d.get(i)[index].getColor(b.getHealth());
-                  }
-                  else
-                  {
-                    box2d.get(i)[index] = null;
-                  }
-                }
-                else if (intersectionY == b.getLocation().getY() + Box.height
-                    && (intersectionX > b.getLocation().getX()
-                        && intersectionX < b.getLocation().getX() + Box.width))
-                {
-                  ball.setBallDeltaY(ball.getBallDeltaY() * -1);
-                  if (box2d.get(i)[index].getHealth() - getLevel() > 0)
-                  {
-                    box2d.get(i)[index].setHealth(b.getHealth() - level);
-                    box2d.get(i)[index].getColor(b.getHealth());
-                  }
-                  else
-                  {
-                    box2d.get(i)[index] = null;
-                  }
-                }
-                else if ((intersectionY > b.getLocation().getY()
-                    && intersectionY < b.getLocation().getY() + Box.height)
-                    && ((intersectionX > b.getLocation().getX()
-                        && intersectionX < b.getLocation().getX()
-                            + (Box.width) / 2)))
-                {
-                  ball.setBallDeltaY(ball.getBallDeltaY() * -1);
-                  if (box2d.get(i)[index].getHealth() - getLevel() > 0)
-                  {
-                    box2d.get(i)[index].setHealth(b.getHealth() - level);
-                    box2d.get(i)[index].getColor(b.getHealth());
-                  }
-                  else
-                  {
-                    box2d.get(i)[index] = null;
-                  }
-                }
-                else if (intersectionX==b.getLocation().getX() && intersectionY<b.getLocation().getY()+Box.height && intersectionY>b.getLocation().getY())
-                {
-                  ball.setBallDeltaX(ball.getBallDeltaX() * -1);
-                  if (box2d.get(i)[index].getHealth() - getLevel() > 0)
-                  {
-                    box2d.get(i)[index].setHealth(b.getHealth() - level);
-                    box2d.get(i)[index].getColor(b.getHealth());
-                  }
-                  else
-                  {
-                    box2d.get(i)[index] = null;
-                  }
-                }
-                else if(intersectionX==b.getLocation().getX()+Box.width&& intersectionY<b.getLocation().getY()+Box.height && intersectionY>b.getLocation().getY())
-                {
-                  ball.setBallDeltaX(ball.getBallDeltaX() * -1);
-                  if (box2d.get(i)[index].getHealth() - getLevel() > 0)
-                  {
-                    box2d.get(i)[index].setHealth(b.getHealth() - level);
-                    box2d.get(i)[index].getColor(b.getHealth());
-                  }
-                  else
-                  {
-                    box2d.get(i)[index] = null;
-                  }
-                }
-                else
-                {
-                  ball.setBallDeltaX(ball.getBallDeltaX() * -1);
-                  ball.setBallDeltaY(ball.getBallDeltaY() * -1);
-                  if (box2d.get(i)[index].getHealth() - getLevel() > 0)
-                  {
-                    box2d.get(i)[index].setHealth(b.getHealth() - level);
-                    box2d.get(i)[index].getColor(b.getHealth());
-                  }
-                  else
-                  {
-                    box2d.get(i)[index] = null;
-                  }
-                }
-                return true;
-              }
+							if (ball.intersects(b)) {
+								Rectangle intersection = ball.intersection(b);
+								int intersectionX = (int) intersection.getLocation().getX();
+								int intersectionY = (int) intersection.getLocation().getY();
+								if (intersectionY == b.getLocation().getY() && intersectionX > b.getLocation().getX()
+										&& intersectionX < b.getLocation().getX() + Box.width) {
 
-            }
-            index = index + 1;
-          }
-        }
-        return false;
-      }
-    }
-  }
+									ball.setBallDeltaY(ball.getBallDeltaY() * -1);
+									if (box2d.get(i)[index].getHealth() - getLevel() > 0) {
+										box2d.get(i)[index].setHealth(b.getHealth() - level);
+										box2d.get(i)[index].getColor(b.getHealth());
+									} else {
+										box2d.get(i)[index] = null;
+									}
+								} else if (intersectionY == b.getLocation().getY() + Box.height
+										&& (intersectionX > b.getLocation().getX()
+												&& intersectionX < b.getLocation().getX() + Box.width)) {
+									ball.setBallDeltaY(ball.getBallDeltaY() * -1);
+									if (box2d.get(i)[index].getHealth() - getLevel() > 0) {
+										box2d.get(i)[index].setHealth(b.getHealth() - level);
+										box2d.get(i)[index].getColor(b.getHealth());
+									} else {
+										box2d.get(i)[index] = null;
+									}
+								} else if ((intersectionY > b.getLocation().getY()
+										&& intersectionY < b.getLocation().getY() + Box.height)
+										&& ((intersectionX > b.getLocation().getX()
+												&& intersectionX < b.getLocation().getX() + (Box.width) / 2))) {
+									ball.setBallDeltaY(ball.getBallDeltaY() * -1);
+									if (box2d.get(i)[index].getHealth() - getLevel() > 0) {
+										box2d.get(i)[index].setHealth(b.getHealth() - level);
+										box2d.get(i)[index].getColor(b.getHealth());
+									} else {
+										box2d.get(i)[index] = null;
+									}
+								} else if (intersectionX == b.getLocation().getX()
+										&& intersectionY < b.getLocation().getY() + Box.height
+										&& intersectionY > b.getLocation().getY()) {
+									ball.setBallDeltaX(ball.getBallDeltaX() * -1);
+									if (box2d.get(i)[index].getHealth() - getLevel() > 0) {
+										box2d.get(i)[index].setHealth(b.getHealth() - level);
+										box2d.get(i)[index].getColor(b.getHealth());
+									} else {
+										box2d.get(i)[index] = null;
+									}
+								} else if (intersectionX == b.getLocation().getX() + Box.width
+										&& intersectionY < b.getLocation().getY() + Box.height
+										&& intersectionY > b.getLocation().getY()) {
+									ball.setBallDeltaX(ball.getBallDeltaX() * -1);
+									if (box2d.get(i)[index].getHealth() - getLevel() > 0) {
+										box2d.get(i)[index].setHealth(b.getHealth() - level);
+										box2d.get(i)[index].getColor(b.getHealth());
+									} else {
+										box2d.get(i)[index] = null;
+									}
+								} else {
+									ball.setBallDeltaX(ball.getBallDeltaX() * -1);
+									ball.setBallDeltaY(ball.getBallDeltaY() * -1);
+									if (box2d.get(i)[index].getHealth() - getLevel() > 0) {
+										box2d.get(i)[index].setHealth(b.getHealth() - level);
+										box2d.get(i)[index].getColor(b.getHealth());
+									} else {
+										box2d.get(i)[index] = null;
+									}
+								}
+								return true;
+							}
 
+						}
+						index = index + 1;
+					}
+				}
+				return false;
+			}
+		}
+	}
 
 	public void paintTitleScreen(Graphics g) {
 		// Sets the font of the title and sets it relative to the size of the JPanel for
@@ -345,9 +301,9 @@ public boolean collide()
 	}
 
 	public Box[] createArray(int[] pattern, int yPos) {
-		Box[] arr = new Box[(int)super.getWidth()/(75 + 19)];
+		Box[] arr = new Box[(int) super.getWidth() / (75 + 19)];
 		for (int i = 0; i < arr.length;) {
-			arr[pattern[i]] = new Box((pattern[i]*inc), yPos,getLevel()+1);
+			arr[pattern[i]] = new Box((pattern[i] * inc), yPos, getLevel()+1);
 			if (arr[pattern[i]] != null) {
 				i++;
 			}
@@ -356,13 +312,12 @@ public boolean collide()
 	}
 
 	public int[] generateRandomPlacement() {
-		int[] randomPlacements = new int[(int)super.getWidth() / (75 + 19)];
+		int[] randomPlacements = new int[(int) super.getWidth() / (75 + 19)];
 		for (int i = 0; i < randomPlacements.length; i++) {
-			randomPlacements[i] = ((int) (Math.random() * ((int)super.getWidth() / (75 + 19))));
+			randomPlacements[i] = ((int) (Math.random() * ((int) super.getWidth() / (75 + 19))));
 		}
 		return randomPlacements;
 	}
-	
 
 	public void drawRow(Box[] arr, Graphics g) {
 		for (Box b : arr) {
