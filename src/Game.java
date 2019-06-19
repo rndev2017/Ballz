@@ -268,6 +268,8 @@ public class Game extends JPanel
    */
   public void howToPlay(Graphics g)
   {
+    g.setFont(new Font(Font.SANS_SERIF, Font.BOLD,
+        (int) (Main.screenSize.getWidth() / 50)));
     g.drawString("How to Play:", (int) (Main.screenSize.getWidth() / 30),
         (int) (Main.screenSize.getHeight() / 4));
     g.drawString("*Click close to the ball in the direction",
