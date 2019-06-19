@@ -197,6 +197,21 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 										&& intersectionY >= b.getLocation().getY()
 										&& intersectionY <= b.getLocation().getY() + 100) {
 									ball.setBallDeltaX(ball.getBallDeltaX() * -1);
+									else if((intersectionX == b.getLocation().getX() + 100|| intersectionX==b.getLocation().getX())
+                    &&(intersectionY == b.getLocation().getY()
+                    || intersectionY == b.getLocation().getY() + 100))
+                {
+                  ball.setBallDeltaX(ball.getBallDeltaX() * -1);
+                  ball.setBallDeltaY(ball.getBallDeltaY() * -1);
+                  if (box2d.get(i)[index].getHealth() - getLevel() > 0)
+                  {
+                    box2d.get(i)[index].setHealth(b.getHealth() - level);
+                    box2d.get(i)[index].getColor(b.getHealth());
+                  }
+                  else
+                  {
+                    box2d.get(i)[index] = null;
+                  }
 								} else {
 									ball.setBallDeltaY(ball.getBallDeltaY() * -1);
 								}
