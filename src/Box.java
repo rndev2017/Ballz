@@ -66,5 +66,17 @@ public class Box extends Rectangle {
 	{
 		return health;
 	}
+	public boolean newHealth(int startingHealth, int decrement)
+  {
+    int newHealth = health-decrement;
+    if(newHealth>0)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
 
 }
