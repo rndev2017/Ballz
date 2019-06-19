@@ -42,6 +42,9 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 		setFocusable(true);
 		addKeyListener(this);
 		addMouseListener(this);
+		
+		Timer t = new Timer(1000 / 30, this);
+		t.start();
 	}
 
 	public void init(Dimension screenSize) {
@@ -70,34 +73,37 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		if (playing) {
-			step();
-		}
+		step();
 	}
 
 	public void step() {
 
 		if (playing) {
-			if (isRowHittingGround()) {
-				playing = false;
-				gameOver = true;
-			}
 
 			if ((int) ball.getY() < movingBallInitialY) {
 
 				ball.move();
 				collide();
 
-			} else {
-				ball.setBallDeltaX(0);
-				ball.setBallDeltaY(0);
-
 			}
-		}
-		System.out.println(showTitleScreen + " " + playing + " " + gameOver);
-		repaint();
+			else if(isRowHittingGround())
+			{
+				playing = false;
+				gameOver = true;
+			}
 
+		else {
+			ball.setBallDeltaX(0);
+			ball.setBallDeltaY(0);
+			
+
+		}
 	}
+
+	repaint();
+
+}
+
 
 	public void paintComponent(Graphics g) {
 
@@ -129,40 +135,41 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 		}
 	}
 
-	public void startGame() {
-		Timer t = new Timer(1000 / 30, this);
-		t.start();
-	}
 
 	public boolean isRowHittingGround() {
 		Box[] b = box2d.get(0);
 		for (Box box : b) {
 			if (box != null) {
-				if (box.getLocation().getY() + Box.height >= movingBallInitialY) {
-					return true;
+				if (box.getLocation().getY() + Box.height < movingBallInitialY) {
+					return false;
 				}
 			}
 		}
-		return false;
+		return true;
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
-		if (showTitleScreen) {
-			if (e.getKeyCode() == KeyEvent.VK_P) {
-				showTitleScreen = false;
-				playing = true;
-				startGame();
-			}
-		}
-		if (gameOver) {
-			if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-				gameOver = false;
-				showTitleScreen = true;
-			}
-		}
+        if (showTitleScreen) {
+            if (e.getKeyCode() == KeyEvent.VK_P) {
+                showTitleScreen = false;
+                playing = true;
+            }
+        }
+        else if(playing){
+        }
+        else if (gameOver) {
+            if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+                gameOver = false;
+                showTitleScreen = true;
+                init(Main.screenSize);
+                level = 1;
+                
+    
+            }
+        }
 	}
+	
 
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
@@ -310,6 +317,7 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 		}
 		return arr;
 	}
+
 
 	public int[] generateRandomPlacement() {
 		int[] randomPlacements = new int[(int) super.getWidth() / (75 + 19)];
