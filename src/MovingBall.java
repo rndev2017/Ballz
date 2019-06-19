@@ -6,13 +6,12 @@ public class MovingBall extends Rectangle
 {
   private int ballDeltaX;
   private int ballDeltaY;
-  private static int diameter;
+  private static int diameter = 25;
   public MovingBall(int initX, int initY)
   {
-    super(initX,initY,diameter,diameter);
+    super(initX, initY, diameter, diameter);
     ballDeltaX = 0; 
-    ballDeltaY=0;
-    diameter = 50;
+    ballDeltaY = 0;
   }
   public void move()
   {
@@ -34,7 +33,7 @@ public class MovingBall extends Rectangle
   {
     this.ballDeltaY = ballDeltaY;
   }
-  public void paintComponent(Graphics g)
+  public void paint(Graphics g)
   {
     g.setColor(Color.WHITE);
     g.fillOval((int)super.getLocation().getX(),(int)super.getLocation().getY(), diameter, diameter);

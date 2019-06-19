@@ -56,10 +56,15 @@ public class Box extends Rectangle {
 		for (Box[] row : boxes) {
 			for (Box b : row) {
 				if (b != null) {
-					b.translate(0, width + 19);
+					b.translate(0, width+25);
 				}
 			}
 		}
+	}
+	
+	public int getHealth()
+	{
+		return health;
 	}
 
 }
