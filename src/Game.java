@@ -1,7 +1,8 @@
 
 /**  
 * Game.java - contains the logic and graphics behind our remastered version of Ballz.  
-* @author  Rohan Nagavardhan & Mourya Chimpiri
+* @author Rohan Nagavardhan
+* @author Mourya Chimpiri
 */
 
 import java.awt.Color;
@@ -26,7 +27,7 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 	private boolean showTitleScreen = true;
 	private boolean playing = false;
 	private boolean gameOver = false;
-	private static int level = 1;
+	private static int level;
 	private int[] randomPattern1, randomPattern2, randomPattern3, randomPattern4, randomPattern5;
 	private ArrayList<Box[]> box2d;
 	private int inc;
@@ -49,7 +50,7 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 
 	public void init(Dimension screenSize) {
 		movingBallInitialX = (int) (screenSize.getWidth() / 4);
-		movingBallInitialY = ((int) (screenSize.getHeight())) - 500;
+		movingBallInitialY = ((int) (screenSize.getHeight()/1.2));
 
 		setSize(screenSize.width / 2, screenSize.height);
 		ball = new MovingBall(movingBallInitialX, movingBallInitialY);
@@ -65,6 +66,7 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 		randomPattern3 = generateRandomPlacement();
 		randomPattern4 = generateRandomPlacement();
 		randomPattern5 = generateRandomPlacement();
+		level = 1;
 
 		box2d = new ArrayList<Box[]>(); // ArrayList of Box rows
 		box2d.add(createArray(getPattern(), (int) super.getHeight() / 4));
@@ -121,17 +123,17 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 			g.fillRect((int) super.getSize().getWidth() - (int) super.getSize().getWidth() / sideBorderScale, 0,
 					(int) super.getSize().getWidth() / sideBorderScale, (int) super.getSize().getHeight());
 			g.drawLine(0, movingBallInitialY+ball.getDiameter(), super.getWidth(), ball.getDiameter()+movingBallInitialY);
-			g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 100));
+			g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, (int)(Main.screenSize.getWidth()/30)));
 			g.setColor(Color.WHITE);
-			g.drawString("Score: " + getLevel(), (int)(this.getSize().getWidth()/2.5), (int)this.getSize().getHeight()/9);
+			g.drawString("Score: " + getLevel(), (int)(Main.screenSize.getWidth()/5.5), (int)(Main.screenSize.getHeight()/8));
 
 		} else if (gameOver) {
 
 			g.setColor(Color.WHITE);
-			g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 150));
-			g.drawString("Your Score: " + getLevel(), (int) super.getWidth() / 4, super.getHeight() / 4);
-			g.setFont(new Font(Font.SANS_SERIF, Font.ITALIC, 100));
-			g.drawString("Press the space key to restart", (int) super.getWidth() / (int) 6.5, super.getHeight() / 2);
+			g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, (int)(Main.screenSize.getWidth()/30)));
+			g.drawString("Your Score: " + getLevel(), (int)(Main.screenSize.getWidth()/6.5), (int)(Main.screenSize.getHeight()/5));
+			g.setFont(new Font(Font.SANS_SERIF, Font.ITALIC, (int)(Main.screenSize.getWidth()/35)));
+			g.drawString("Press the space key to restart", (int)(Main.screenSize.getWidth()/12), (int)(Main.screenSize.getHeight()/2));
 		}
 	}
 
@@ -140,12 +142,12 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 		Box[] b = box2d.get(0);
 		for (Box box : b) {
 			if (box != null) {
-				if (box.getLocation().getY() + Box.height < movingBallInitialY) {
-					return false;
+				if (box.getLocation().getY() + Box.height >= movingBallInitialY) {
+					return true;
 				}
 			}
 		}
-		return true;
+		return false;
 	}
 
 	@Override
@@ -163,7 +165,7 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
                 gameOver = false;
                 showTitleScreen = true;
                 init(Main.screenSize);
-                level = 1;
+               
                 
     
             }
@@ -297,14 +299,14 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 		// Sets the font of the title and sets it relative to the size of the JPanel for
 		// automatic resizing
 		g.setColor(new Color(255, 102, 0)); // Dark Orange
-		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 150));
-		g.drawString("Ballz", (int) getWidth() / 3, (int) (super.getHeight() / 4));
+		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, (int)(Main.screenSize.getWidth()/12)));
+		g.drawString("Ballz", (int)(Main.screenSize.getWidth()/6.5), (int)(Main.screenSize.getHeight()/5));
 
 		// Sets the font of the instructions and sets it relative to the size of the
 		// JPanel for automatic resizing
 		g.setColor(Color.WHITE);
-		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 50));
-		g.drawString("Press 'P' to play.", getWidth() / 3, (int) (getHeight() / 1.5));
+		g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, (int)(Main.screenSize.getWidth()/25)));
+		g.drawString("Press 'P' to play.",(int)(Main.screenSize.getWidth()/9.5), (int)(Main.screenSize.getHeight()/2));
 	}
 
 	public Box[] createArray(int[] pattern, int yPos) {
