@@ -180,11 +180,8 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 			int finalY = arg0.getY();
 			ball.setBallDeltaY(finalY - (int) ball.getY());
 			// ball.setBallDeltaY(50);
-			if (finalX - (int) ball.getX() > 50) {
-				ball.setBallDeltaX(ball.getDiameter() - 20);
-			} else {
 				ball.setBallDeltaX(finalX - (int) ball.getX());
-			}
+
 			ball.move();
 			collide();
 
