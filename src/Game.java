@@ -277,7 +277,7 @@ public class Game extends JPanel
    */
   public Box[] createArray(int[] pattern, int yPos)
   {
-    Box[] arr = new Box[5];
+    Box[] arr = new Box[10];
     for (int i = 0; i < arr.length - 1;)
     {
       arr[pattern[i]] = new Box(
@@ -299,7 +299,7 @@ public class Game extends JPanel
    */
   public int[] generateRandomPlacement()
   {
-    int[] randomPlacements = new int[5];
+    int[] randomPlacements = new int[10];
     for (int i = 0; i < randomPlacements.length - 1; i++)
     {
       randomPlacements[i] = ((int) (Math.random() * randomPlacements.length
@@ -425,21 +425,6 @@ public class Game extends JPanel
 
                   ball.setBallDeltaY(ball.getBallDeltaY() * -1);
                   // Does the box have no health
-                  if (box2d.get(i)[index].getHealth() - getLevel() > 0)
-                  {
-                    box2d.get(i)[index].setHealth(b.getHealth() - level);
-                    box2d.get(i)[index].getColor(b.getHealth());// Changes color
-                                                                // of box
-                                                                // according to
-                                                                // health
-                  }
-                  else
-                  {
-                    box2d.get(i)[index] = null;
-                    int noOfBoxes = emptyBoxRow.get(i);
-                    noOfBoxes = noOfBoxes - 1;
-                    emptyBoxRow.put(i, noOfBoxes);
-                  }
                 }
                 // Does the ball hit the bottom border of the box
                 else if (intersectionY == b.getLocation().getY() + Box.height
@@ -525,19 +510,79 @@ public class Game extends JPanel
                 // Does the ball hit the edges of the box
                 else
                 {
-                  ball.setBallDeltaX(ball.getBallDeltaX() * -1);
-                  ball.setBallDeltaY(ball.getBallDeltaY() * -1);
-                  if (box2d.get(i)[index].getHealth() - getLevel() > 0)
+                  int dx = ball.getBallDeltaX();
+                  int dy = ball.getBallDeltaY();
+                  if(intersectionX == b.getLocation().getX() + Box.width)
                   {
-                    box2d.get(i)[index].setHealth(b.getHealth() - level);
-                    box2d.get(i)[index].getColor(b.getHealth());
+                    if(dy>0)
+                    {
+                      ball.setBallDeltaY(dy*-1);
+                      ball.setBallDeltaX(dx*-1);
+                      if (box2d.get(i)[index].getHealth() - getLevel() > 0)
+                      {
+                        box2d.get(i)[index].setHealth(b.getHealth() - level);
+                        box2d.get(i)[index].getColor(b.getHealth());
+                      }
+                      else
+                      {
+                        box2d.get(i)[index] = null;
+                        int noOfBoxes = emptyBoxRow.get(i);
+                        noOfBoxes = noOfBoxes - 1;
+                        emptyBoxRow.put(i, noOfBoxes);
+                      }
+                    }
+                    if(dy>0)
+                    {
+                      ball.setBallDeltaX(dx*-1);
+                      if (box2d.get(i)[index].getHealth() - getLevel() > 0)
+                      {
+                        box2d.get(i)[index].setHealth(b.getHealth() - level);
+                        box2d.get(i)[index].getColor(b.getHealth());
+                      }
+                      else
+                      {
+                        box2d.get(i)[index] = null;
+                        int noOfBoxes = emptyBoxRow.get(i);
+                        noOfBoxes = noOfBoxes - 1;
+                        emptyBoxRow.put(i, noOfBoxes);
+                      }
+                    }
                   }
-                  else
+                  if(intersectionX==b.getLocation().getX())
                   {
-                    box2d.get(i)[index] = null;
-                    int noOfBoxes = emptyBoxRow.get(i);
-                    noOfBoxes = noOfBoxes - 1;
-                    emptyBoxRow.put(i, noOfBoxes);
+                    if(dy>0)
+                    {
+                      ball.setBallDeltaX(dx*-1);
+                      if (box2d.get(i)[index].getHealth() - getLevel() > 0)
+                      {
+                        box2d.get(i)[index].setHealth(b.getHealth() - level);
+                        box2d.get(i)[index].getColor(b.getHealth());
+                      }
+                      else
+                      {
+                        box2d.get(i)[index] = null;
+                        int noOfBoxes = emptyBoxRow.get(i);
+                        noOfBoxes = noOfBoxes - 1;
+                        emptyBoxRow.put(i, noOfBoxes);
+                      }
+                    }
+                    else
+                    {
+                      ball.setBallDeltaY(dy*-1);
+                      ball.setBallDeltaX(dx*-1);
+                      if (box2d.get(i)[index].getHealth() - getLevel() > 0)
+                      {
+                        box2d.get(i)[index].setHealth(b.getHealth() - level);
+                        box2d.get(i)[index].getColor(b.getHealth());
+                      }
+                      else
+                      {
+                        box2d.get(i)[index] = null;
+                        int noOfBoxes = emptyBoxRow.get(i);
+                        noOfBoxes = noOfBoxes - 1;
+                        emptyBoxRow.put(i, noOfBoxes);
+                      }
+                    }
                   }
                 }
                 return true;
@@ -551,7 +596,6 @@ public class Game extends JPanel
       }
     }
   }
-  public void 
   public boolean isRowHittingGround()
   {
     int index = 0;
