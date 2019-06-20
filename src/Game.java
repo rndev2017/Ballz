@@ -17,10 +17,11 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import java.awt.Toolkit;
+import java.util.Iterator;
+import java.util.Set;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-
+import java.util.Iterator;
 public class Game extends JPanel
     implements ActionListener, KeyListener, MouseListener
 {
@@ -29,6 +30,8 @@ public class Game extends JPanel
   private boolean showTitleScreen = true;
   private boolean playing = false;
   private boolean gameOver = false;
+  private boolean clicked = false;
+  
   private static int level;
   private int[] randomPattern1, randomPattern2, randomPattern3, randomPattern4,
       randomPattern5;
@@ -38,6 +41,7 @@ public class Game extends JPanel
   private final int sideBorderScale = 20;
   private int movingBallInitialX;
   private int movingBallInitialY;
+  private java.util.HashMap<Integer, Integer> emptyBoxRow = new java.util.HashMap<Integer, Integer>();
 
   /**
    * Constructs a GamePanel
@@ -45,7 +49,7 @@ public class Game extends JPanel
   public Game()
   {
     setBackground(Color.BLACK);
-    inc = Box.height + 19;
+    inc = Box.width + 5;
 
     // listens to key presses and mouse
     setFocusable(true);
@@ -53,7 +57,7 @@ public class Game extends JPanel
     addMouseListener(this);
 
     // call step() 60 fps
-    Timer t = new Timer(1000 / 30, this);
+    Timer t = new Timer(1000 / 60, this);
     t.start();
   }
 
@@ -67,7 +71,7 @@ public class Game extends JPanel
   {
     movingBallInitialX = (int) (screenSize.getWidth() / 4);
     movingBallInitialY = ((int) (screenSize.getHeight() / 1.2));
-
+    emptyBoxRow.clear();
     setSize(screenSize.width / 2, screenSize.height);
     ball = new MovingBall(movingBallInitialX, movingBallInitialY);
     topBorder = new Rectangle(0, 0, (int) this.getSize().getWidth(),
@@ -88,8 +92,17 @@ public class Game extends JPanel
     level = 1;
 
     box2d = new ArrayList<Box[]>(); // initializes ArrayList of Box rows
-    box2d.add(createArray(getPattern(), (int) super.getHeight() / 4));
-
+    Box[] boxArr = createArray(getPattern(), (int) super.getHeight() / 4);
+    int nonNullBoxArrayLength = boxArr.length;
+    for (int i = 0; i < boxArr.length; i++)
+    {
+      if (boxArr[i] == null)
+      {
+        nonNullBoxArrayLength = nonNullBoxArrayLength - 1;
+      }
+    }
+    box2d.add(boxArr);
+    emptyBoxRow.put(0, nonNullBoxArrayLength);
   }
 
   public static int getLevel()
@@ -108,13 +121,22 @@ public class Game extends JPanel
 
     if (playing)
     {
+      if (clicked)
+      {
+        ball.move();
+        collide();
+      }
 
-      if ((int) ball.getY() < movingBallInitialY)
+      if (isRowHittingGround())
+      {
+        playing = false;
+        gameOver = true;
+      }
+      else if ((int) ball.getY() < movingBallInitialY)
       {
 
         ball.move();
         collide();
-
       }
 
       else
@@ -189,49 +211,6 @@ public class Game extends JPanel
     }
   }
 
-  @Override
-  public void keyPressed(KeyEvent e)
-  {
-    if (showTitleScreen)
-    {
-      if (e.getKeyCode() == KeyEvent.VK_P)
-      {
-        showTitleScreen = false;
-        playing = true;
-      }
-    }
-    else if (playing)
-    {
-    }
-    else if (gameOver)
-    {
-      if (e.getKeyCode() == KeyEvent.VK_SPACE)
-      {
-        gameOver = false;
-        showTitleScreen = true;
-        init(Main.screenSize); // reinitializes the board
-
-      }
-    }
-  }
-
-  @Override
-  public void mouseClicked(MouseEvent arg0)
-  {
-    if (playing)
-    {
-      int finalX = arg0.getX();
-      int finalY = arg0.getY();
-      ball.setBallDeltaY(finalY - (int) ball.getY());
-      ball.setBallDeltaX(finalX - (int) ball.getX());
-
-      ball.move();
-      collide();
-
-    }
-
-  }
-
   /**
    * paints the title screen
    * 
@@ -257,7 +236,7 @@ public class Game extends JPanel
     g.drawString("Press 'P' to play.", (int) (Main.screenSize.getWidth() / 9.5),
         (int) (Main.screenSize.getHeight() / 1.5));
 
-    howToPlay(g);
+    howToPlay1(g);
   }
 
   /**
@@ -266,7 +245,7 @@ public class Game extends JPanel
    * @param Graphics
    *          g
    */
-  public void howToPlay(Graphics g)
+  public void howToPlay1(Graphics g)
   {
     g.setFont(new Font(Font.SANS_SERIF, Font.BOLD,
         (int) (Main.screenSize.getWidth() / 50)));
@@ -298,10 +277,13 @@ public class Game extends JPanel
    */
   public Box[] createArray(int[] pattern, int yPos)
   {
-    Box[] arr = new Box[(int) super.getWidth() / (75 + 19)];
-    for (int i = 0; i < arr.length;)
+    Box[] arr = new Box[5];
+    for (int i = 0; i < arr.length - 1;)
     {
-      arr[pattern[i]] = new Box((pattern[i] * inc), yPos, getLevel() + 1);
+      arr[pattern[i]] = new Box(
+          (pattern[i] * (inc))
+              + (int) super.getSize().getWidth() / sideBorderScale,
+          yPos, getLevel() + 1);
       if (arr[pattern[i]] != null)
       {
         i++;
@@ -317,11 +299,13 @@ public class Game extends JPanel
    */
   public int[] generateRandomPlacement()
   {
-    int[] randomPlacements = new int[(int) super.getWidth() / (75 + 19)];
-    for (int i = 0; i < randomPlacements.length; i++)
+    int[] randomPlacements = new int[5];
+    for (int i = 0; i < randomPlacements.length - 1; i++)
     {
-      randomPlacements[i] = ((int) (Math.random()
-          * ((int) super.getWidth() / (75 + 19))));
+      randomPlacements[i] = ((int) (Math.random() * randomPlacements.length
+          - 1));
+
+      // ((int) super.getWidth() / (75 + 19))));
     }
     return randomPlacements;
   }
@@ -372,40 +356,54 @@ public class Game extends JPanel
     return randomPattern1;
 
   }
+
   /**
    * Assesses if the ball intersects the borders and the boxes
+   * 
    * @return
    */
   public boolean collide()
   {
- //Does the ball hit the sides of the panel
-    if (ball.intersects(rightBorder)||ball.intersects(leftBorder))
+    // Does the ball hit the sides of the panel
+    if (ball.intersects(rightBorder) || ball.intersects(leftBorder))
     {
       ball.setBallDeltaX(ball.getBallDeltaX() * -1);
       return true;
     }
- // Does the ball hit the top of the panel
+    // Does the ball hit the top of the panel
     else if (ball.intersects(topBorder))
     {
       ball.setBallDeltaY(ball.getBallDeltaY() * -1);
 
       return true;
     }
-  //Does the ball go below the start line
+    // Does the ball go below the start line
     else if (ball.getLocation().getY() >= movingBallInitialY)
     {
+      clicked = false;
       ball.setLocation((int) ball.getLocation().getX(), movingBallInitialY);
       ball.setBallDeltaX(0);
       ball.setBallDeltaY(0);
       level++;
       Box.shiftRow(box2d);
-      box2d.add(createArray(getPattern(), (int) super.getHeight() / 4));// Adds a new row of boxes at the top
+      Box[] boxArr = createArray(getPattern(), (int) super.getHeight() / 4);
+      box2d.add(boxArr);// Adds a new row of boxes at the top
+      int nonNullBoxArrayLength = boxArr.length;
+      for (int i = 0; i < boxArr.length; i++)
+      {
+        if (boxArr[i] == null)
+        {
+          nonNullBoxArrayLength = nonNullBoxArrayLength - 1;
+        }
+      }
+      emptyBoxRow.put(box2d.size() - 1, nonNullBoxArrayLength);
       return true;
     }
     else
     {
       {
-        // Checks if the ball hits any of the boxes and decreases health accordingly
+        // Checks if the ball hits any of the boxes and decreases health
+        // accordingly
         for (int i = 0; i < box2d.size(); i++)
         {
           int index = 0;
@@ -426,18 +424,24 @@ public class Game extends JPanel
                 {
 
                   ball.setBallDeltaY(ball.getBallDeltaY() * -1);
-                  //Does the box have no health
+                  // Does the box have no health
                   if (box2d.get(i)[index].getHealth() - getLevel() > 0)
                   {
                     box2d.get(i)[index].setHealth(b.getHealth() - level);
-                    box2d.get(i)[index].getColor(b.getHealth());// Changes color of box according to health
+                    box2d.get(i)[index].getColor(b.getHealth());// Changes color
+                                                                // of box
+                                                                // according to
+                                                                // health
                   }
                   else
                   {
                     box2d.get(i)[index] = null;
+                    int noOfBoxes = emptyBoxRow.get(i);
+                    noOfBoxes = noOfBoxes - 1;
+                    emptyBoxRow.put(i, noOfBoxes);
                   }
                 }
-             // Does the ball hit the bottom border of the box
+                // Does the ball hit the bottom border of the box
                 else if (intersectionY == b.getLocation().getY() + Box.height
                     && (intersectionX > b.getLocation().getX()
                         && intersectionX < b.getLocation().getX() + Box.width))
@@ -451,9 +455,13 @@ public class Game extends JPanel
                   else
                   {
                     box2d.get(i)[index] = null;
+                    int noOfBoxes = emptyBoxRow.get(i);
+                    noOfBoxes = noOfBoxes - 1;
+                    emptyBoxRow.put(i, noOfBoxes);
+
                   }
                 }
-             // Does the ball hit the middle of the box
+                // Does the ball hit the middle of the box
                 else if ((intersectionY > b.getLocation().getY()
                     && intersectionY < b.getLocation().getY() + Box.height)
                     && ((intersectionX > b.getLocation().getX()
@@ -469,9 +477,12 @@ public class Game extends JPanel
                   else
                   {
                     box2d.get(i)[index] = null;
+                    int noOfBoxes = emptyBoxRow.get(i);
+                    noOfBoxes = noOfBoxes - 1;
+                    emptyBoxRow.put(i, noOfBoxes);
                   }
                 }
-             // Does the ball hit the left border of the box
+                // Does the ball hit the left border of the box
                 else if (intersectionX == b.getLocation().getX()
                     && intersectionY < b.getLocation().getY() + Box.height
                     && intersectionY > b.getLocation().getY())
@@ -485,9 +496,13 @@ public class Game extends JPanel
                   else
                   {
                     box2d.get(i)[index] = null;
+                    int noOfBoxes = emptyBoxRow.get(i);
+                    noOfBoxes = noOfBoxes - 1;
+                    emptyBoxRow.put(i, noOfBoxes);
+
                   }
                 }
-             // Does the ball hit the right border of the box
+                // Does the ball hit the right border of the box
                 else if (intersectionX == b.getLocation().getX() + Box.width
                     && intersectionY < b.getLocation().getY() + Box.height
                     && intersectionY > b.getLocation().getY())
@@ -501,49 +516,28 @@ public class Game extends JPanel
                   else
                   {
                     box2d.get(i)[index] = null;
+                    int noOfBoxes = emptyBoxRow.get(i);
+                    noOfBoxes = noOfBoxes - 1;
+                    emptyBoxRow.put(i, noOfBoxes);
+
                   }
                 }
+                // Does the ball hit the edges of the box
                 else
                 {
-                  if(ball.getBallDeltaY()<0)
+                  ball.setBallDeltaX(ball.getBallDeltaX() * -1);
+                  ball.setBallDeltaY(ball.getBallDeltaY() * -1);
+                  if (box2d.get(i)[index].getHealth() - getLevel() > 0)
                   {
-                    ball.setBallDeltaY(ball.getBallDeltaY() * -1);
-                    if (box2d.get(i)[index].getHealth() - getLevel() > 0)
-                    {
-                      box2d.get(i)[index].setHealth(b.getHealth() - level);
-                      box2d.get(i)[index].getColor(b.getHealth());
-                    }
-                    else
-                    {
-                      box2d.get(i)[index] = null;
-                    }
-                  }
-                  else if(ball.getBallDeltaY()>0)
-                  {
-                    ball.setBallDeltaX(ball.getBallDeltaX() * -1);
-                    if (box2d.get(i)[index].getHealth() - getLevel() > 0)
-                    {
-                      box2d.get(i)[index].setHealth(b.getHealth() - level);
-                      box2d.get(i)[index].getColor(b.getHealth());
-                    }
-                    else
-                    {
-                      box2d.get(i)[index] = null;
-                    }
+                    box2d.get(i)[index].setHealth(b.getHealth() - level);
+                    box2d.get(i)[index].getColor(b.getHealth());
                   }
                   else
                   {
-                    ball.setBallDeltaX(ball.getBallDeltaX() * -1);
-                    ball.setBallDeltaY(ball.getBallDeltaY() * -1);
-                    if (box2d.get(i)[index].getHealth() - getLevel() > 0)
-                    {
-                      box2d.get(i)[index].setHealth(b.getHealth() - level);
-                      box2d.get(i)[index].getColor(b.getHealth());
-                    }
-                    else
-                    {
-                      box2d.get(i)[index] = null;
-                    }
+                    box2d.get(i)[index] = null;
+                    int noOfBoxes = emptyBoxRow.get(i);
+                    noOfBoxes = noOfBoxes - 1;
+                    emptyBoxRow.put(i, noOfBoxes);
                   }
                 }
                 return true;
@@ -557,43 +551,109 @@ public class Game extends JPanel
       }
     }
   }
-
-  @Override
-  public void keyReleased(KeyEvent e)
+  public void 
+  public boolean isRowHittingGround()
   {
-    // TODO Auto-generated method stub
+    int index = 0;
+    Set<Integer> keys = emptyBoxRow.keySet();
+    for (Iterator iterator = keys.iterator(); iterator.hasNext();)
+    {
+      Integer key = (Integer) iterator.next();
+      if (emptyBoxRow.get(key) != 0)
+      {
+        index = key;
+        break;
+      }
+    }
+    Box[] b = box2d.get(index);
+    for (Box box : b)
+    {
+      if (box != null)
+      {
+        if (box.getLocation().getY() + Box.height >= movingBallInitialY)
+        {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  
+  
+  
+  //Key and mouse methods:
+  
+  public void keyPressed(KeyEvent e)
+  {
+    if (showTitleScreen)
+    {
+      if (e.getKeyCode() == KeyEvent.VK_P)
+      {
+        showTitleScreen = false;
+        playing = true;
+      }
+    }
+    else if (playing)
+    {
+    }
+    else if (gameOver)
+    {
+      if (e.getKeyCode() == KeyEvent.VK_SPACE)
+      {
+        gameOver = false;
+        showTitleScreen = true;
+        init(Main.screenSize); // reinitializes the board
 
+      }
+    }
+  }
+  public void keyReleased(KeyEvent e){}
+  public void keyTyped(KeyEvent e)  {}
+  public void mouseClicked(MouseEvent e)
+  {
+    if (playing)
+    {
+      clicked = true;
+      boolean reverse = false;
+      double dX = e.getX()-(ball.getX()+20);
+      double dY = (ball.getY()+20) - e.getY();
+      if (dX < 0)
+      {
+        dX=-dX;
+        reverse = true;
+      }
+      double th = Math.atan((double)dY/dX);
+      double finalX = 5*Math.cos(th);
+      double finalY = 5*Math.sin(th);
+      if(reverse) finalX=-finalX;
+      ball.setBallDeltaX((int)finalX);
+      ball.setBallDeltaY((int)-finalY);
+
+    }
   }
 
-  @Override
-  public void keyTyped(KeyEvent e)
-  {
-  }
-  @Override
-  public void mousePressed(MouseEvent e)
-  {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void mouseReleased(MouseEvent e)
-  {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
   public void mouseEntered(MouseEvent e)
   {
     // TODO Auto-generated method stub
-
+    
   }
 
-  @Override
   public void mouseExited(MouseEvent e)
   {
     // TODO Auto-generated method stub
+    
+  }
 
+  public void mousePressed(MouseEvent e)
+  {
+    // TODO Auto-generated method stub
+    
+  }
+
+  public void mouseReleased(MouseEvent e)
+  {
+    // TODO Auto-generated method stub
+    
   }
 }
+  
