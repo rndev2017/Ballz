@@ -255,7 +255,7 @@ public class Game extends JPanel
     g.setFont(new Font(Font.SANS_SERIF, Font.BOLD,
         (int) (Main.screenSize.getWidth() / 25)));
     g.drawString("Press 'P' to play.", (int) (Main.screenSize.getWidth() / 9.5),
-        (int) (Main.screenSize.getHeight() / 2));
+        (int) (Main.screenSize.getHeight() / 1.5));
 
     howToPlay(g);
   }
@@ -274,19 +274,19 @@ public class Game extends JPanel
         (int) (Main.screenSize.getHeight() / 4));
     g.drawString("*Click close to the ball in the direction",
         (int) (Main.screenSize.getWidth() / 30),
-        (int) (Main.screenSize.getHeight() / 4 + 40));
+        (int) (Main.screenSize.getHeight() / 4 + 50));
     g.drawString("you want the ball to go in order to hit the blocks",
         (int) (Main.screenSize.getWidth() / 30),
-        (int) (Main.screenSize.getHeight() / 4 + 80));
+        (int) (Main.screenSize.getHeight() / 4 + 100));
     g.drawString("*The ball will hit the blocks",
         (int) (Main.screenSize.getWidth() / 30),
-        (int) (Main.screenSize.getHeight() / 4 + 120));
+        (int) (Main.screenSize.getHeight() / 4 + 150));
     g.drawString("with the damage of the level number",
         (int) (Main.screenSize.getWidth() / 30),
-        (int) (Main.screenSize.getHeight() / 4 + 160));
+        (int) (Main.screenSize.getHeight() / 4 + 200));
     g.drawString("*Prevent the blocks from reaching the ground.",
         (int) (Main.screenSize.getWidth() / 30),
-        (int) (Main.screenSize.getHeight() / 4 + 200));
+        (int) (Main.screenSize.getHeight() / 4 + 250));
   }
 
   /**
@@ -503,19 +503,47 @@ public class Game extends JPanel
                     box2d.get(i)[index] = null;
                   }
                 }
-             // Does the ball hit the edges of the box
                 else
                 {
-                  ball.setBallDeltaX(ball.getBallDeltaX() * -1);
-                  ball.setBallDeltaY(ball.getBallDeltaY() * -1);
-                  if (box2d.get(i)[index].getHealth() - getLevel() > 0)
+                  if(ball.getBallDeltaY()<0)
                   {
-                    box2d.get(i)[index].setHealth(b.getHealth() - level);
-                    box2d.get(i)[index].getColor(b.getHealth());
+                    ball.setBallDeltaY(ball.getBallDeltaY() * -1);
+                    if (box2d.get(i)[index].getHealth() - getLevel() > 0)
+                    {
+                      box2d.get(i)[index].setHealth(b.getHealth() - level);
+                      box2d.get(i)[index].getColor(b.getHealth());
+                    }
+                    else
+                    {
+                      box2d.get(i)[index] = null;
+                    }
+                  }
+                  else if(ball.getBallDeltaY()>0)
+                  {
+                    ball.setBallDeltaX(ball.getBallDeltaX() * -1);
+                    if (box2d.get(i)[index].getHealth() - getLevel() > 0)
+                    {
+                      box2d.get(i)[index].setHealth(b.getHealth() - level);
+                      box2d.get(i)[index].getColor(b.getHealth());
+                    }
+                    else
+                    {
+                      box2d.get(i)[index] = null;
+                    }
                   }
                   else
                   {
-                    box2d.get(i)[index] = null;
+                    ball.setBallDeltaX(ball.getBallDeltaX() * -1);
+                    ball.setBallDeltaY(ball.getBallDeltaY() * -1);
+                    if (box2d.get(i)[index].getHealth() - getLevel() > 0)
+                    {
+                      box2d.get(i)[index].setHealth(b.getHealth() - level);
+                      box2d.get(i)[index].getColor(b.getHealth());
+                    }
+                    else
+                    {
+                      box2d.get(i)[index] = null;
+                    }
                   }
                 }
                 return true;
