@@ -1,4 +1,3 @@
-
 /**  
 * Game.java - contains the logic and graphics behind our remastered version of Ballz.  
 * @author Rohan Nagavardhan
@@ -17,6 +16,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Set;
 import java.awt.Toolkit;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -38,6 +39,7 @@ public class Game extends JPanel
   private final int sideBorderScale = 20;
   private int movingBallInitialX;
   private int movingBallInitialY;
+  private java.util.HashMap<Integer, Integer> emptyBoxRow = new java.util.HashMap<Integer, Integer>();
 
   /**
    * Constructs a GamePanel
@@ -45,7 +47,7 @@ public class Game extends JPanel
   public Game()
   {
     setBackground(Color.BLACK);
-    inc = Box.height + 19;
+    inc = Box.width+5;
 
     // listens to key presses and mouse
     setFocusable(true);
@@ -67,7 +69,7 @@ public class Game extends JPanel
   {
     movingBallInitialX = (int) (screenSize.getWidth() / 4);
     movingBallInitialY = ((int) (screenSize.getHeight() / 1.2));
-
+    emptyBoxRow.clear();
     setSize(screenSize.width / 2, screenSize.height);
     ball = new MovingBall(movingBallInitialX, movingBallInitialY);
     topBorder = new Rectangle(0, 0, (int) this.getSize().getWidth(),
@@ -88,8 +90,15 @@ public class Game extends JPanel
     level = 1;
 
     box2d = new ArrayList<Box[]>(); // initializes ArrayList of Box rows
-    box2d.add(createArray(getPattern(), (int) super.getHeight() / 4));
-
+    Box[] boxArr = createArray(getPattern(), (int) super.getHeight() / 4);
+    int nonNullBoxArrayLength = boxArr.length;
+    for (int i = 0; i < boxArr.length; i++) {
+		if(boxArr[i] == null) {
+			nonNullBoxArrayLength = nonNullBoxArrayLength-1;
+		}
+	}
+	box2d.add(boxArr);
+    emptyBoxRow.put(0,nonNullBoxArrayLength);
   }
 
   public static int getLevel()
@@ -109,13 +118,17 @@ public class Game extends JPanel
     if (playing)
     {
 
-      if ((int) ball.getY() < movingBallInitialY)
+	  if(isRowHittingGround())
+	  {
+		playing = false;
+		gameOver = true;
+	  }
+	  else if ((int) ball.getY() < movingBallInitialY)
       {
 
         ball.move();
-        collide();
-
-      }
+        collide();        
+       }
 
       else
       {
@@ -146,7 +159,7 @@ public class Game extends JPanel
         drawRow(b, g);
       }
 
-      // draws the borders
+       //draws the borders
       g.setColor(Color.gray);
       g.fillRect(0, 0, (int) this.getSize().getWidth(),
           (int) this.getSize().getHeight() / topBorderScale);
@@ -255,39 +268,40 @@ public class Game extends JPanel
     g.setFont(new Font(Font.SANS_SERIF, Font.BOLD,
         (int) (Main.screenSize.getWidth() / 25)));
     g.drawString("Press 'P' to play.", (int) (Main.screenSize.getWidth() / 9.5),
-        (int) (Main.screenSize.getHeight() / 1.5));
+        (int) (Main.screenSize.getHeight() / 2));
 
-    howToPlay(g);
+    howToPlay1(g);
   }
-
+  
   /**
    * displays the tutorial and instructions for the end user to follow
    * 
-   * @param Graphics
-   *          g
+   * @param Graphics g
    */
-  public void howToPlay(Graphics g)
+  public void howToPlay1(Graphics g)
   {
-    g.setFont(new Font(Font.SANS_SERIF, Font.BOLD,
-        (int) (Main.screenSize.getWidth() / 50)));
-    g.drawString("How to Play:", (int) (Main.screenSize.getWidth() / 30),
-        (int) (Main.screenSize.getHeight() / 4));
-    g.drawString("*Click close to the ball in the direction",
-        (int) (Main.screenSize.getWidth() / 30),
-        (int) (Main.screenSize.getHeight() / 4 + 50));
-    g.drawString("you want the ball to go in order to hit the blocks",
-        (int) (Main.screenSize.getWidth() / 30),
-        (int) (Main.screenSize.getHeight() / 4 + 100));
-    g.drawString("*The ball will hit the blocks",
-        (int) (Main.screenSize.getWidth() / 30),
-        (int) (Main.screenSize.getHeight() / 4 + 150));
-    g.drawString("with the damage of the level number",
-        (int) (Main.screenSize.getWidth() / 30),
-        (int) (Main.screenSize.getHeight() / 4 + 200));
-    g.drawString("*Prevent the blocks from reaching the ground.",
-        (int) (Main.screenSize.getWidth() / 30),
-        (int) (Main.screenSize.getHeight() / 4 + 250));
+	    g.setFont(new Font(Font.SANS_SERIF, Font.BOLD,
+	        (int) (Main.screenSize.getWidth() / 50)));
+	    g.drawString("How to Play:", (int) (Main.screenSize.getWidth() / 30),
+	        (int) (Main.screenSize.getHeight() / 4));
+	    g.drawString("*Click close to the ball in the direction",
+	        (int) (Main.screenSize.getWidth() / 30),
+	        (int) (Main.screenSize.getHeight() / 4 + 50));
+	    g.drawString("you want the ball to go in order to hit the blocks",
+	        (int) (Main.screenSize.getWidth() / 30),
+	        (int) (Main.screenSize.getHeight() / 4 + 100));
+	    g.drawString("*The ball will hit the blocks",
+	        (int) (Main.screenSize.getWidth() / 30),
+	        (int) (Main.screenSize.getHeight() / 4 + 150));
+	    g.drawString("with the damage of the level number",
+	        (int) (Main.screenSize.getWidth() / 30),
+	        (int) (Main.screenSize.getHeight() / 4 + 200));
+	    g.drawString("*Prevent the blocks from reaching the ground.",
+	        (int) (Main.screenSize.getWidth() / 30),
+	        (int) (Main.screenSize.getHeight() / 4 + 250));
   }
+
+  
 
   /**
    * creates an Box array with a random pattern
@@ -298,10 +312,10 @@ public class Game extends JPanel
    */
   public Box[] createArray(int[] pattern, int yPos)
   {
-    Box[] arr = new Box[(int) super.getWidth() / (75 + 19)];
-    for (int i = 0; i < arr.length;)
+    Box[] arr = new Box[20];
+    for (int i = 0; i < arr.length-1;)
     {
-      arr[pattern[i]] = new Box((pattern[i] * inc), yPos, getLevel() + 1);
+      arr[pattern[i]] = new Box((pattern[i] * (inc)) + (int) super.getSize().getWidth() / sideBorderScale , yPos, getLevel() + 1);
       if (arr[pattern[i]] != null)
       {
         i++;
@@ -317,11 +331,13 @@ public class Game extends JPanel
    */
   public int[] generateRandomPlacement()
   {
-    int[] randomPlacements = new int[(int) super.getWidth() / (75 + 19)];
-    for (int i = 0; i < randomPlacements.length; i++)
+    int[] randomPlacements = new int[20];
+    for (int i = 0; i < randomPlacements.length-1; i++)
     {
-      randomPlacements[i] = ((int) (Math.random()
-          * ((int) super.getWidth() / (75 + 19))));
+      randomPlacements[i] = ((int) (Math.random()*randomPlacements.length-1));
+           
+          
+          //((int) super.getWidth() / (75 + 19))));
     }
     return randomPlacements;
   }
@@ -399,7 +415,15 @@ public class Game extends JPanel
       ball.setBallDeltaY(0);
       level++;
       Box.shiftRow(box2d);
-      box2d.add(createArray(getPattern(), (int) super.getHeight() / 4));// Adds a new row of boxes at the top
+      Box[] boxArr = createArray(getPattern(), (int) super.getHeight() / 4);
+	  box2d.add(boxArr);// Adds a new row of boxes at the top
+	  int nonNullBoxArrayLength = boxArr.length;
+      for (int i = 0; i < boxArr.length; i++) {
+		if(boxArr[i] == null) {
+			nonNullBoxArrayLength = nonNullBoxArrayLength-1;
+		}
+	  }	
+      emptyBoxRow.put(box2d.size()-1,nonNullBoxArrayLength);	  
       return true;
     }
     else
@@ -435,6 +459,9 @@ public class Game extends JPanel
                   else
                   {
                     box2d.get(i)[index] = null;
+                    int noOfBoxes = emptyBoxRow.get(i);
+                    noOfBoxes = noOfBoxes -1;
+                    emptyBoxRow.put(i,noOfBoxes);
                   }
                 }
              // Does the ball hit the bottom border of the box
@@ -451,6 +478,10 @@ public class Game extends JPanel
                   else
                   {
                     box2d.get(i)[index] = null;
+                    int noOfBoxes = emptyBoxRow.get(i);
+                    noOfBoxes = noOfBoxes -1;
+                    emptyBoxRow.put(i,noOfBoxes);
+        
                   }
                 }
              // Does the ball hit the middle of the box
@@ -469,6 +500,9 @@ public class Game extends JPanel
                   else
                   {
                     box2d.get(i)[index] = null;
+                    int noOfBoxes = emptyBoxRow.get(i);
+                    noOfBoxes = noOfBoxes -1;
+                    emptyBoxRow.put(i,noOfBoxes);        
                   }
                 }
              // Does the ball hit the left border of the box
@@ -485,6 +519,10 @@ public class Game extends JPanel
                   else
                   {
                     box2d.get(i)[index] = null;
+                    int noOfBoxes = emptyBoxRow.get(i);
+                    noOfBoxes = noOfBoxes -1;
+                    emptyBoxRow.put(i,noOfBoxes);
+        
                   }
                 }
              // Does the ball hit the right border of the box
@@ -501,49 +539,28 @@ public class Game extends JPanel
                   else
                   {
                     box2d.get(i)[index] = null;
+                    int noOfBoxes = emptyBoxRow.get(i);
+                    noOfBoxes = noOfBoxes -1;                    
+                    emptyBoxRow.put(i,noOfBoxes);
+        
                   }
                 }
+             // Does the ball hit the edges of the box
                 else
                 {
-                  if(ball.getBallDeltaY()<0)
+                  ball.setBallDeltaX(ball.getBallDeltaX() * -1);
+                  ball.setBallDeltaY(ball.getBallDeltaY() * -1);
+                  if (box2d.get(i)[index].getHealth() - getLevel() > 0)
                   {
-                    ball.setBallDeltaY(ball.getBallDeltaY() * -1);
-                    if (box2d.get(i)[index].getHealth() - getLevel() > 0)
-                    {
-                      box2d.get(i)[index].setHealth(b.getHealth() - level);
-                      box2d.get(i)[index].getColor(b.getHealth());
-                    }
-                    else
-                    {
-                      box2d.get(i)[index] = null;
-                    }
-                  }
-                  else if(ball.getBallDeltaY()>0)
-                  {
-                    ball.setBallDeltaX(ball.getBallDeltaX() * -1);
-                    if (box2d.get(i)[index].getHealth() - getLevel() > 0)
-                    {
-                      box2d.get(i)[index].setHealth(b.getHealth() - level);
-                      box2d.get(i)[index].getColor(b.getHealth());
-                    }
-                    else
-                    {
-                      box2d.get(i)[index] = null;
-                    }
+                    box2d.get(i)[index].setHealth(b.getHealth() - level);
+                    box2d.get(i)[index].getColor(b.getHealth());
                   }
                   else
                   {
-                    ball.setBallDeltaX(ball.getBallDeltaX() * -1);
-                    ball.setBallDeltaY(ball.getBallDeltaY() * -1);
-                    if (box2d.get(i)[index].getHealth() - getLevel() > 0)
-                    {
-                      box2d.get(i)[index].setHealth(b.getHealth() - level);
-                      box2d.get(i)[index].getColor(b.getHealth());
-                    }
-                    else
-                    {
-                      box2d.get(i)[index] = null;
-                    }
+                    box2d.get(i)[index] = null;
+                    int noOfBoxes = emptyBoxRow.get(i);
+                    noOfBoxes = noOfBoxes -1;
+                    emptyBoxRow.put(i,noOfBoxes);        
                   }
                 }
                 return true;
@@ -556,6 +573,27 @@ public class Game extends JPanel
         return false;
       }
     }
+  }
+
+  public boolean isRowHittingGround() {
+	  int index =0;
+    Set<Integer> keys = emptyBoxRow.keySet();
+    for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
+		Integer key = (Integer) iterator.next();
+		if(emptyBoxRow.get(key) != 0) {
+			index = key;
+			break;
+		}
+	}
+	Box[] b = box2d.get(index);
+	for (Box box : b) {
+		if (box != null) {
+			if (box.getLocation().getY() + Box.height >= movingBallInitialY) {
+				return true;
+			}
+		}
+	}
+	return false;
   }
 
   @Override
